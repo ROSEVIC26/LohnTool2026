@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "LohnTool 2026 – Browser",
+      "file": "${workspaceFolder}/dist/index.html",
+      "webRoot": "${workspaceFolder}/dist",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      }
+    }
+  ]
+}

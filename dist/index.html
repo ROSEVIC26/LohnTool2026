@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LohnTool 2026 · Brutto-Netto-Berechnung</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ================================================================ HEADER -->
+  <header class="app-header">
+    <h1>LohnTool 2026</h1>
+    <span class="sub">Brutto-Netto-Berechnung · Lohn-/Kirchensteuer · Sozialversicherung</span>
+  </header>
+
+  <!-- ================================================================ BODY -->
+  <main class="app-body">
+
+    <!-- ============================================================ LINKS (Eingabe) -->
+    <section class="col-left">
+
+      <!-- Allgemeine Angaben -->
+      <div class="group-box">
+        <span class="group-head">Allgemeine Angaben</span>
+        <div class="group-inner">
+          <div class="field-row">
+            <label for="edtName">Name</label>
+            <input type="text" id="edtName" placeholder="optional" />
+          </div>
+          <div class="field-row">
+            <label for="cmbMonat">Monat / Jahr</label>
+            <div class="monat-row">
+              <select id="cmbMonat"></select>
+              <span>/</span>
+              <input type="number" id="spnJahr" min="2020" max="2100" value="2026" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arbeitslohn -->
+      <div class="group-box">
+        <span class="group-head">Angaben zum Arbeitslohn</span>
+        <div class="group-inner">
+          <div class="field-row">
+            <label for="edtBrutto">Bruttolohn (€)</label>
+            <input type="text" id="edtBrutto" class="right" value="4.000,00" />
+          </div>
+          <div class="field-row">
+            <label for="edtFreibetrag">Freibetrag (€)</label>
+            <input type="text" id="edtFreibetrag" class="right" value="0,00" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Besteuerung -->
+      <div class="group-box">
+        <span class="group-head">Angaben zur Besteuerung</span>
+        <div class="group-inner">
+          <div class="field-row">
+            <label for="cmbStkl">Steuerklasse</label>
+            <select id="cmbStkl">
+              <option value="1">I</option>
+              <option value="2">II</option>
+              <option value="3">III</option>
+              <option value="4">IV</option>
+              <option value="5">V</option>
+              <option value="6">VI</option>
+            </select>
+            <label for="edtKFB" style="flex:0 0 40px;text-align:right">KFB</label>
+            <input type="text" id="edtKFB" style="flex:0 0 60px;text-align:right" value="0,0" />
+          </div>
+
+          <div class="check-row" style="margin-top:6px">
+            <input type="checkbox" id="chkKiSt" />
+            <label for="chkKiSt">Kirchensteuerpflicht</label>
+          </div>
+
+          <div class="field-row" style="padding-left:22px">
+            <label id="lblBundesland" for="cmbBundesland" style="opacity:.45">Bundesland</label>
+            <select id="cmbBundesland" disabled style="opacity:.45"></select>
+          </div>
+
+          <div class="check-row" style="margin-top:4px">
+            <input type="checkbox" id="chkAlter64" />
+            <label for="chkAlter64">Alter 64+ (§ 24a EStG)</label>
+          </div>
+          <div class="field-row" id="lblGebJahr" style="display:none;padding-left:22px">
+            <label for="edtGebJahr" style="font-size:12px;color:#666">Geburtsjahr</label>
+            <input type="number" id="edtGebJahr" min="1920" max="2010" style="max-width:90px" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Sozialversicherung -->
+      <div class="group-box">
+        <span class="group-head">Sozialversicherung</span>
+        <div class="group-inner">
+
+          <div class="radio-group">
+            <label><input type="radio" id="rdoGKV" name="kvTyp" value="gkv" checked /> Gesetzliche KV</label>
+            <label><input type="radio" id="rdoPKV" name="kvTyp" value="pkv" /> Private KV</label>
+          </div>
+
+          <!-- GKV-Felder -->
+          <div id="lblKVZ" class="field-row">
+            <label for="edtKVZ">Zusatzbeitrag KV (%)</label>
+            <input type="text" id="edtKVZ" class="right" value="2,90" style="max-width:80px" />
+          </div>
+
+          <div id="lblKinder" class="field-row">
+            <label for="cmbKinder">Kinder (PV)</label>
+            <select id="cmbKinder">
+              <option value="0">kinderlos</option>
+              <option value="1" selected>1 Kind</option>
+              <option value="2">2 Kinder</option>
+              <option value="3">3 Kinder</option>
+              <option value="4">4 Kinder</option>
+              <option value="5">5+ Kinder</option>
+            </select>
+          </div>
+
+          <div class="check-row" id="sachsenRow">
+            <input type="checkbox" id="chkSachsen" />
+            <label for="chkSachsen">Sachsen (PV-Sonderregelung)</label>
+          </div>
+
+          <!-- PKV-Felder -->
+          <div id="lblPKVBeitrag" class="field-row" style="display:none">
+            <label for="edtPKVBeitrag">PKV-Beitrag (€/Monat)</label>
+            <input type="text" id="edtPKVBeitrag" class="right" value="0,00" />
+          </div>
+          <div id="lblPKVAGZusch" class="field-row" style="display:none">
+            <label for="edtPKVAGZusch">AG-Zuschuss PKV (€)</label>
+            <input type="text" id="edtPKVAGZusch" class="right" value="0,00" />
+          </div>
+
+          <div style="margin-top:6px;display:flex;gap:20px">
+            <div class="check-row">
+              <input type="checkbox" id="chkKeinRV" />
+              <label for="chkKeinRV">Kein RV-Abzug</label>
+            </div>
+            <div class="check-row">
+              <input type="checkbox" id="chkKeinAV" />
+              <label for="chkKeinAV">Kein AV-Abzug</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section><!-- /col-left -->
+
+    <!-- ============================================================ RECHTS (Ergebnis) -->
+    <section class="col-right">
+
+      <!-- Platzhalter -->
+      <div class="ergebnis-placeholder" id="placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M8 12h8M8 8h5M8 16h3"/>
+        </svg>
+        <p>Eingaben vornehmen und<br>«Berechnen» klicken.</p>
+      </div>
+
+      <!-- Ergebnis -->
+      <div class="ergebnis-panel" id="ergebnisPanel">
+        <div class="ergebnis-title">Berechnungsergebnis</div>
+
+        <!-- Brutto -->
+        <div class="res-sep thick"></div>
+        <div class="res-row">
+          <span class="res-label bold" id="lblRBrutto">Bruttolohn</span>
+          <span class="res-wert bold positiv" id="wRBrutto">–</span>
+        </div>
+        <div class="res-sep thick"></div>
+
+        <!-- Steuern -->
+        <div class="res-section-head">Steuerabzüge</div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRLST">Lohnsteuer</span>
+          <span class="res-wert negativ" id="wRLST">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRSolZ">Solidaritätszuschlag</span>
+          <span class="res-wert negativ" id="wRSolZ">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRKiSt">Kirchensteuer</span>
+          <span class="res-wert negativ" id="wRKiSt">–</span>
+        </div>
+        <div class="res-sep"></div>
+        <div class="res-row">
+          <span class="res-label bold" id="lblRSumSt">Summe Steuerabzüge</span>
+          <span class="res-wert bold negativ" id="wRSumSt">–</span>
+        </div>
+
+        <!-- SV -->
+        <div class="res-section-head" style="margin-top:8px">Sozialversicherung – Arbeitnehmer</div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRRV">Rentenversicherung (RV)</span>
+          <span class="res-wert negativ" id="wRRV">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRKV">Krankenversicherung (KV)</span>
+          <span class="res-wert negativ" id="wRKV">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRPV">Pflegeversicherung (PV)</span>
+          <span class="res-wert negativ" id="wRPV">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label" id="lblRAV">Arbeitslosenversicherung (AV)</span>
+          <span class="res-wert negativ" id="wRAV">–</span>
+        </div>
+        <div class="res-sep"></div>
+        <div class="res-row">
+          <span class="res-label bold" id="lblRSumSV">Summe Sozialversicherung</span>
+          <span class="res-wert bold negativ" id="wRSumSV">–</span>
+        </div>
+
+        <!-- Netto -->
+        <div class="res-sep thick"></div>
+        <div class="res-row netto-row">
+          <span class="res-label bold" id="lblRNetto">Nettolohn</span>
+          <span class="res-wert bold netto" id="wRNetto">–</span>
+        </div>
+        <div class="res-sep thick"></div>
+
+        <!-- AG-Anteile -->
+        <div class="res-section-head" style="margin-top:12px">Arbeitgeber-Anteile Sozialversicherung</div>
+        <div class="res-row indent">
+          <span class="res-label ag" id="lblRAGRV">RV-Anteil Arbeitgeber</span>
+          <span class="res-wert ag" id="wRAGRV">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label ag" id="lblRAGKV">KV-Anteil / -Zuschuss AG</span>
+          <span class="res-wert ag" id="wRAGKV">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label ag" id="lblRAGPV">PV-Anteil Arbeitgeber</span>
+          <span class="res-wert ag" id="wRAGPV">–</span>
+        </div>
+        <div class="res-row indent">
+          <span class="res-label ag" id="lblRAGAV">AV-Anteil Arbeitgeber</span>
+          <span class="res-wert ag" id="wRAGAV">–</span>
+        </div>
+        <div class="res-sep"></div>
+        <div class="res-row">
+          <span class="res-label bold ag" id="lblRAGSum">AG-Anteil Sozialversicherung</span>
+          <span class="res-wert bold ag" id="wRAGSum">–</span>
+        </div>
+        <div class="res-sep thick"></div>
+        <div class="res-row">
+          <span class="res-label bold" id="lblRGesAufwand">Gesamt-Aufwand Arbeitgeber</span>
+          <span class="res-wert bold aufwand" id="wRGesAufwand">–</span>
+        </div>
+
+      </div><!-- /ergebnisPanel -->
+
+    </section><!-- /col-right -->
+
+  </main><!-- /app-body -->
+
+  <!-- ================================================================ FOOTER -->
+  <footer class="app-footer">
+    <button class="btn-primary" id="btnBerechnen">▶ Berechnen</button>
+    <button class="btn-secondary" id="btnDrucken" disabled>🖨 Drucken / PDF</button>
+    <span style="flex:1"></span>
+    <button class="btn-danger" id="btnEnde">Beenden</button>
+  </footer>
+
+</div><!-- /app-shell -->
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "ritwickdey.LiveServer",
+    "dbaeumer.vscode-eslint"
+  ]
+}

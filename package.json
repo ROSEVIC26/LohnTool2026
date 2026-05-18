@@ -1,0 +1,14 @@
+{
+  "name": "lohntool2026",
+  "version": "1.0.0",
+  "description": "Brutto-Netto-Berechnung 2026 – Lohnsteuer und Sozialversicherung",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsc --watch & npx serve dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "type": "module"
+}

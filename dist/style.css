@@ -1,0 +1,370 @@
+/* ============================================================
+   LohnTool 2026 – Stylesheet
+   Farbgebung: Braun/Orange-Akzent wie die Delphi-Anwendung
+   ============================================================ */
+
+:root {
+  --clr-header     : #6B3400;   /* dunkles Braun/Orange */
+  --clr-header-sub : #D4956A;
+  --clr-bg         : #F5F3EF;   /* helles Beige */
+  --clr-panel-l    : #EDE8DF;   /* linkes Panel */
+  --clr-panel-r    : #FFFFFF;
+  --clr-footer     : #EDE8DF;
+  --clr-border     : #D0C8B8;
+  --clr-accent     : #8B4500;   /* Orange-Braun Akzent */
+  --clr-positiv    : #006000;
+  --clr-negativ    : #8B0000;
+  --clr-netto      : #00407A;
+  --clr-ag         : #777777;
+  --clr-aufwand    : #5a3000;
+  --clr-input-text : #4A2800;
+  --clr-input-bg   : #FDFAF5;
+  --clr-group-head : #5a3800;
+  --radius         : 6px;
+  --font           : 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 13.5px;
+  background: var(--clr-bg);
+  color: #222;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+.app-header {
+  background: var(--clr-header);
+  color: #fff;
+  padding: 10px 20px 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.app-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  white-space: nowrap;
+}
+
+.app-header .sub {
+  font-size: 11.5px;
+  color: var(--clr-header-sub);
+}
+
+/* Body */
+.app-body {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  overflow: auto;
+}
+
+/* Linke Spalte: Eingaben */
+.col-left {
+  width: 390px;
+  min-width: 300px;
+  flex-shrink: 0;
+  background: var(--clr-panel-l);
+  padding: 14px 14px;
+  border-right: 1px solid var(--clr-border);
+  overflow-y: auto;
+}
+
+/* Rechte Spalte: Ergebnisse */
+.col-right {
+  flex: 1;
+  background: var(--clr-panel-r);
+  padding: 14px 18px;
+  overflow-y: auto;
+}
+
+/* Footer */
+.app-footer {
+  background: var(--clr-footer);
+  border-top: 1px solid var(--clr-border);
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   GRUPPIERUNGSBOXEN
+   ============================================================ */
+
+.group-box {
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  background: #fff;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.group-box legend,
+.group-head {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--clr-group-head);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 5px 10px 4px;
+  background: #F0EAE0;
+  border-bottom: 1px solid var(--clr-border);
+  display: block;
+  width: 100%;
+}
+
+.group-inner {
+  padding: 10px 10px 8px;
+}
+
+/* ============================================================
+   EINGABEFELDER
+   ============================================================ */
+
+.field-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 6px;
+}
+
+.field-row label {
+  flex: 0 0 130px;
+  font-size: 13px;
+  color: #444;
+}
+
+.field-row input[type="text"],
+.field-row input[type="number"],
+.field-row select {
+  flex: 1;
+  padding: 4px 7px;
+  border: 1px solid #C8BEA8;
+  border-radius: 4px;
+  background: var(--clr-input-bg);
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--clr-input-text);
+  font-weight: 600;
+}
+
+.field-row input[type="text"].right,
+.field-row input.right {
+  text-align: right;
+}
+
+.field-row input:focus,
+.field-row select:focus {
+  outline: none;
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 2px rgba(139,69,0,.12);
+}
+
+/* Jahr-Input neben Monat */
+.monat-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+
+.monat-row select { flex: 1; }
+.monat-row span   { color: #888; }
+.monat-row input  { width: 70px; flex: 0 0 70px; text-align: center; }
+
+/* Checkboxen / Radiobuttons */
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.check-row label { cursor: pointer; flex: 1; }
+
+.radio-group {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 6px;
+}
+
+.radio-group label { font-size: 13px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+/* Kleine Hinweis-Texte */
+.hint {
+  font-size: 11px;
+  color: #888;
+  margin-top: -2px;
+  margin-bottom: 4px;
+  padding-left: 136px;
+}
+
+/* ============================================================
+   ERGEBNIS-PANEL
+   ============================================================ */
+
+.ergebnis-panel {
+  display: none;
+}
+
+.ergebnis-panel.visible {
+  display: block;
+}
+
+.ergebnis-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--clr-accent);
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid var(--clr-accent);
+}
+
+/* Tabellen-ähnliche Zeilen */
+.res-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 4px;
+  border-radius: 3px;
+}
+
+.res-row:hover { background: #F8F4EE; }
+
+.res-label { font-size: 13px; color: #333; flex: 1; }
+.res-wert  { font-size: 13px; text-align: right; min-width: 110px; font-feature-settings: "tnum"; }
+
+.res-label.bold,
+.res-wert.bold  { font-weight: 700; }
+
+/* Farbige Werte */
+.res-wert.positiv  { color: var(--clr-positiv); }
+.res-wert.negativ  { color: var(--clr-negativ); }
+.res-wert.netto    { color: var(--clr-netto); }
+.res-wert.ag       { color: var(--clr-ag); }
+.res-wert.aufwand  { color: var(--clr-aufwand); }
+
+.res-label.ag      { color: #888; }
+
+/* Trennlinien */
+.res-sep {
+  height: 1px;
+  background: var(--clr-border);
+  margin: 4px 0;
+}
+
+.res-sep.thick {
+  height: 2px;
+  background: var(--clr-accent);
+  margin: 5px 0;
+}
+
+/* Netto-Zeile hervorheben */
+.res-row.netto-row {
+  background: #EFF5FB;
+  border-radius: 4px;
+  padding: 5px 4px;
+  margin: 2px 0;
+}
+
+/* AG-Abschnitt dezenter */
+.res-section-head {
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin: 10px 0 3px;
+}
+
+/* Einrückung für Unterzeilen */
+.res-row.indent .res-label { padding-left: 14px; }
+
+/* Placeholder (vor erster Berechnung) */
+.ergebnis-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #C0B090;
+  gap: 10px;
+}
+
+.ergebnis-placeholder svg {
+  opacity: .35;
+}
+
+.ergebnis-placeholder p {
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+button {
+  font-family: var(--font);
+  font-size: 13.5px;
+  padding: 7px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .15s, opacity .15s;
+}
+
+.btn-primary {
+  background: var(--clr-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-primary:hover { background: #703800; }
+
+.btn-secondary {
+  background: #DDD5C8;
+  color: #333;
+}
+
+.btn-secondary:hover { background: #CEC4B5; }
+
+.btn-danger {
+  background: #C04000;
+  color: #fff;
+}
+
+.btn-danger:hover { background: #A03000; }
+
+button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+/* ============================================================
+   RESPONSIV (schmale Fenster)
+   ============================================================ */
+
+@media (max-width: 780px) {
+  .app-body { flex-direction: column; }
+  .col-left { width: 100%; border-right: none; border-bottom: 1px solid var(--clr-border); }
+}
