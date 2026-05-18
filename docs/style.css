@@ -4,22 +4,22 @@
    ============================================================ */
 
 :root {
-  --clr-header     : #6B3400;   /* dunkles Braun/Orange */
-  --clr-header-sub : #D4956A;
-  --clr-bg         : #F5F3EF;   /* helles Beige */
-  --clr-panel-l    : #EDE8DF;   /* linkes Panel */
+  --clr-header     : #003366;   /* Dunkelblau */
+  --clr-header-sub : #7AAAD0;
+  --clr-bg         : #F0F3F7;
+  --clr-panel-l    : #E8EDF4;
   --clr-panel-r    : #FFFFFF;
-  --clr-footer     : #EDE8DF;
-  --clr-border     : #D0C8B8;
-  --clr-accent     : #8B4500;   /* Orange-Braun Akzent */
+  --clr-footer     : #E8EDF4;
+  --clr-border     : #C0CCD8;
+  --clr-accent     : #004A99;
   --clr-positiv    : #006000;
   --clr-negativ    : #8B0000;
-  --clr-netto      : #00407A;
+  --clr-netto      : #003366;
   --clr-ag         : #777777;
-  --clr-aufwand    : #5a3000;
-  --clr-input-text : #4A2800;
-  --clr-input-bg   : #FDFAF5;
-  --clr-group-head : #5a3800;
+  --clr-aufwand    : #002244;
+  --clr-input-text : #002244;
+  --clr-input-bg   : #F5F8FC;
+  --clr-group-head : #003366;
   --radius         : 6px;
   --font           : 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 }
