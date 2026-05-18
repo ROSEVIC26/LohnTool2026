@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Brutto-Netto-Berechnung 2026 – Lohnsteuer und Sozialversicherung",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "dev": "tsc --watch & npx serve dist"
-  },
+    "build": "tsc && copy src\\style.css docs\\style.css && copy src\\index.html docs\\index.html",
+    "watch": "tsc --watch"
+},
   "devDependencies": {
     "typescript": "^5.4.5"
   },
