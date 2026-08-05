@@ -228,7 +228,7 @@ async function berechnen(): Promise<void> {
 
   let R: any;
   try {
-    const response = await fetch('http://localhost:3000/api/berechne', {
+    const response = await fetch('https://lohntool2026.onrender.com/api/berechne', {
       method  : 'POST',
       headers : { 'Content-Type': 'application/json' },
       body    : JSON.stringify(anfrage),
