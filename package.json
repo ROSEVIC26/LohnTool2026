@@ -1,20 +1,23 @@
 {
   "name": "lohntool2026",
   "version": "1.0.0",
-  "description": "Brutto-Netto-Berechnung 2026 – Lohnsteuer und Sozialversicherung",
+  "type": "module",
+  "description": "Brutto-Netto-Berechnung 2026",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc && copy src\\style.css docs\\style.css && copy src\\index.html docs\\index.html",
     "watch": "tsc --watch",
     "start": "node server-dist/server/server.js",
     "build:server": "npx tsc -p tsconfig.server.json"
   },
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.9.1",
-    "typescript": "^5.4.5"
-  },
-  "type": "module",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
+    "typescript": "^5.4.5"
   }
 }

@@ -3,7 +3,7 @@ import { LST2026Params, LST2026_Init, LST2026_Berechne } from '../src/LST2026.js
 import { SV2026Params,  SV2026_Init,  SV2026_Berechne  } from '../src/SV2026.js';
 
 const app  = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // JSON-Anfragen verstehen
 app.use(express.json());
