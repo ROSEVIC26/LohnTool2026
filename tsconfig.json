@@ -5,12 +5,13 @@
     "moduleResolution": "node",
     "strict": true,
     "noImplicitAny": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
     "lib": ["ES2020", "DOM"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "files": [
+    "src/LST2026.ts",
+    "src/SV2026.ts",
+    "src/app.ts"
+  ]
 }

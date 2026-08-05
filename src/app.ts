@@ -4,9 +4,6 @@
  * Portierung von ULohnForm.pas
  */
 
-import { LST2026Params, LST2026Result, LST2026_Init, LST2026_Berechne } from './LST2026.js';
-import { SV2026Params,  SV2026Result,  SV2026_Init,  SV2026_Berechne  } from './SV2026.js';
-
 // ---------------------------------------------------------------------------
 // Konstanten
 // ---------------------------------------------------------------------------
@@ -30,8 +27,8 @@ const KISTSAETZE: number[] = [
 // ---------------------------------------------------------------------------
 // Gespeicherte Ergebnisse für Druck
 // ---------------------------------------------------------------------------
-let gLSTResult: LST2026Result | null = null;
-let gSVResult:  SV2026Result  | null = null;
+let gLSTResult: any = null;
+let gSVResult:  any = null;
 let gBruttoCent = 0;
 let gKiStCent   = 0;
 
@@ -173,15 +170,13 @@ function setZeile(
 // ---------------------------------------------------------------------------
 // HAUPTBERECHNUNG
 // ---------------------------------------------------------------------------
-function berechnen(): void {
-  // --- Eingaben lesen ---
+async function berechnen(): Promise<void> {
   const brutto = parseEuroCent(el<HTMLInputElement>('edtBrutto').value, 'Bruttolohn');
   if (brutto === null) return;
 
   const freibet = parseEuroCent(el<HTMLInputElement>('edtFreibetrag').value, 'Freibetrag');
   if (freibet === null) return;
 
-  // KFB
   let kfbVal = 0;
   const kfbStr = el<HTMLInputElement>('edtKFB').value.trim();
   if (kfbStr !== '' && kfbStr !== '0' && kfbStr !== '0,0') {
@@ -190,7 +185,6 @@ function berechnen(): void {
     kfbVal = k;
   }
 
-  // Geburtsjahr
   let gebJahr = 0;
   if ((el<HTMLInputElement>('chkAlter64')).checked) {
     gebJahr = parseInt(el<HTMLInputElement>('edtGebJahr').value);
@@ -200,117 +194,93 @@ function berechnen(): void {
     }
   }
 
-  // ========================================================================
-  // LOHNSTEUER
-  // ========================================================================
-  const LP: LST2026Params = {} as LST2026Params;
-  LST2026_Init(LP);
+  const kvzStr = el<HTMLInputElement>('edtKVZ').value.replace(',', '.');
+  const kvz    = parseFloat(kvzStr) || 2.90;
 
-  LP.RE4        = brutto;
-  LP.JRE4       = brutto * 12;
-  LP.LZZ        = 2;
-  LP.STKL       = parseInt((el<HTMLSelectElement>('cmbStkl')).value);
-  LP.ZKF        = kfbVal;
-  LP.LZZFREIB   = freibet;
-  LP.KVZ        = 2.90;
-
-  if ((el<HTMLInputElement>('rdoGKV')).checked) {
-    const kvzStr = el<HTMLInputElement>('edtKVZ').value.replace(',', '.');
-    LP.KVZ = parseFloat(kvzStr) || 2.90;
-  }
-
+  let pkpv = 0, pkpvagz = 0;
   if ((el<HTMLInputElement>('rdoPKV')).checked) {
-    LP.PKV = 1;
-    const pkpv   = parseEuroCent(el<HTMLInputElement>('edtPKVBeitrag').value, 'PKV-Beitrag');
-    const pkpvag = parseEuroCent(el<HTMLInputElement>('edtPKVAGZusch').value, 'AG-Zuschuss');
-    if (pkpv === null || pkpvag === null) return;
-    LP.PKPV    = pkpv;
-    LP.PKPVAGZ = pkpvag;
+    const p1 = parseEuroCent(el<HTMLInputElement>('edtPKVBeitrag').value, 'PKV-Beitrag');
+    const p2 = parseEuroCent(el<HTMLInputElement>('edtPKVAGZusch').value, 'AG-Zuschuss');
+    if (p1 === null || p2 === null) return;
+    pkpv = p1; pkpvagz = p2;
   }
 
-  if ((el<HTMLInputElement>('chkKeinRV')).checked) LP.KRV = 1;
-  if ((el<HTMLInputElement>('chkKeinAV')).checked) LP.ALV = 1;
+  // Anfrage an den Server
+  const anfrage = {
+    brutto,
+    freibet,
+    stkl      : parseInt((el<HTMLSelectElement>('cmbStkl')).value),
+    zkf       : kfbVal,
+    kvz,
+    pkv       : (el<HTMLInputElement>('rdoPKV')).checked ? 1 : 0,
+    pkpv,
+    pkpvagz,
+    pvKinder  : parseInt((el<HTMLSelectElement>('cmbKinder')).value),
+    pvs       : (el<HTMLInputElement>('chkSachsenChk')).checked ? 1 : 0,
+    pvz       : parseInt((el<HTMLSelectElement>('cmbKinder')).value) === 0 ? 1 : 0,
+    krv       : (el<HTMLInputElement>('chkKeinRV')).checked ? 1 : 0,
+    alv       : (el<HTMLInputElement>('chkKeinAV')).checked ? 1 : 0,
+    kist      : (el<HTMLInputElement>('chkKiSt')).checked ? 1 : 0,
+    kiStSatz  : kiStSatz(),
+    alter1    : (el<HTMLInputElement>('chkAlter64')).checked ? 1 : 0,
+    gebJahr,
+  };
 
-  if ((el<HTMLInputElement>('chkSachsen') as HTMLInputElement).checked) LP.PVS = 1;
-  if ((el<HTMLInputElement>('rdoGKV')).checked) {
-    const kindIdx = parseInt((el<HTMLSelectElement>('cmbKinder')).value);
-    LP.PVZ = kindIdx === 0 ? 1 : 0;
+  let R: any;
+  try {
+    const response = await fetch('http://localhost:3000/api/berechne', {
+      method  : 'POST',
+      headers : { 'Content-Type': 'application/json' },
+      body    : JSON.stringify(anfrage),
+    });
+    if (!response.ok) throw new Error('Server-Fehler: ' + response.status);
+    R = await response.json();
+  } catch (err) {
+    alert('Verbindung zum Server fehlgeschlagen.\nLäuft der Server?\n\n' + err);
+    return;
   }
 
-  if ((el<HTMLInputElement>('chkAlter64')).checked && gebJahr > 0) {
-    LP.ALTER1 = 1;
-    LP.AJAHR  = gebJahr + 65;
-  }
-
-  LP.R = (el<HTMLInputElement>('chkKiSt')).checked ? 1 : 0;
-
-  const LR = LST2026_Berechne(LP);
-
-  // Kirchensteuer
-  let kiSt = 0;
-  if ((el<HTMLInputElement>('chkKiSt')).checked) {
-    kiSt = Math.trunc(LR.BK * kiStSatz() / 100.0);
-  }
-
-  // ========================================================================
-  // SOZIALVERSICHERUNG
-  // ========================================================================
-  const SP: SV2026Params = {} as SV2026Params;
-  SV2026_Init(SP);
-  SP.BRUTTO = brutto;
-
-  if ((el<HTMLInputElement>('rdoPKV')).checked) {
-    SP.PKV = 1;
-    const pkpv   = parseEuroCent(el<HTMLInputElement>('edtPKVBeitrag').value, 'PKV-Beitrag');
-    const pkpvag = parseEuroCent(el<HTMLInputElement>('edtPKVAGZusch').value, 'AG-Zuschuss');
-    if (pkpv === null || pkpvag === null) return;
-    SP.PKPV   = pkpv;
-    SP.PKPVAG = pkpvag;
-  } else {
-    SP.PKV = 0;
-    const kvzStr = el<HTMLInputElement>('edtKVZ').value.replace(',', '.');
-    SP.KVZ      = parseFloat(kvzStr) || 2.90;
-    SP.PVKinder = parseInt((el<HTMLSelectElement>('cmbKinder')).value);
-    SP.PVS      = (el<HTMLInputElement>('chkSachsen')).checked ? 1 : 0;
-  }
-
-  if ((el<HTMLInputElement>('chkKeinRV')).checked) SP.KRV = 1;
-  if ((el<HTMLInputElement>('chkKeinAV')).checked) SP.KAV = 1;
-
-  const SR = SV2026_Berechne(SP);
-
-  // ========================================================================
-  // Ergebnisse speichern & anzeigen
-  // ========================================================================
-  gLSTResult  = LR;
-  gSVResult   = SR;
+  // Ergebnisse speichern für Druck
   gBruttoCent = brutto;
-  gKiStCent   = kiSt;
+  gKiStCent   = R.kiSt;
+  gLSTResult  = {
+    LSTLZZ: R.lstlzz, SOLZLZZ: R.solzlzz, BK: R.bk,
+    STS:0, SOLZS:0, BKS:0, VFRB:0, VFRBS1:0, VFRBS2:0,
+    WVFRB:0, WVFRBM:0, WVFRBO:0
+  };
+  gSVResult = {
+    KVAN:R.kvan, KVAG:R.kvag, KVBMG:0,
+    PVAN:R.pvan, PVAG:R.pvag, PVBMG:0,
+    RVAN:R.rvan, RVAG:R.rvag, RVBMG:0,
+    AVAN:R.avan, AVAG:R.avag, AVBMG:0,
+    GSAN:R.gsan, GSAG:R.gsag, GSGES:0
+  };
 
-  const sumSt   = LR.LSTLZZ + LR.SOLZLZZ + kiSt;
-  const sumSVAN = SR.GSAN;
+  const sumSt   = R.lstlzz + R.solzlzz + R.kiSt;
+  const sumSVAN = R.gsan;
   const netto   = brutto - sumSt - sumSVAN;
 
-  // Ergebnisbereich sichtbar machen
+  // Ergebnisbereich anzeigen
   el('ergebnisPanel').classList.add('visible');
+  el('placeholder').style.display = 'none';
 
   setZeile('lblRBrutto',    'wRBrutto',    'Bruttolohn',                  brutto,         true,  'positiv');
-  setZeile('lblRLST',       'wRLST',       'Lohnsteuer',                  LR.LSTLZZ,      false, 'negativ');
-  setZeile('lblRSolZ',      'wRSolZ',      'Solidaritätszuschlag',        LR.SOLZLZZ,     false, 'negativ');
-  setZeile('lblRKiSt',      'wRKiSt',      'Kirchensteuer',               kiSt,           false, 'negativ');
+  setZeile('lblRLST',       'wRLST',       'Lohnsteuer',                  R.lstlzz,       false, 'negativ');
+  setZeile('lblRSolZ',      'wRSolZ',      'Solidaritätszuschlag',        R.solzlzz,      false, 'negativ');
+  setZeile('lblRKiSt',      'wRKiSt',      'Kirchensteuer',               R.kiSt,         false, 'negativ');
   setZeile('lblRSumSt',     'wRSumSt',     'Summe Steuerabzüge',          sumSt,          true,  'negativ');
-  setZeile('lblRRV',        'wRRV',        'Rentenversicherung (RV)',      SR.RVAN,        false, 'negativ');
-  setZeile('lblRKV',        'wRKV',        'Krankenversicherung (KV)',     SR.KVAN,        false, 'negativ');
-  setZeile('lblRPV',        'wRPV',        'Pflegeversicherung (PV)',      SR.PVAN,        false, 'negativ');
-  setZeile('lblRAV',        'wRAV',        'Arbeitslosenversicherung (AV)',SR.AVAN,        false, 'negativ');
+  setZeile('lblRRV',        'wRRV',        'Rentenversicherung (RV)',      R.rvan,         false, 'negativ');
+  setZeile('lblRKV',        'wRKV',        'Krankenversicherung (KV)',     R.kvan,         false, 'negativ');
+  setZeile('lblRPV',        'wRPV',        'Pflegeversicherung (PV)',      R.pvan,         false, 'negativ');
+  setZeile('lblRAV',        'wRAV',        'Arbeitslosenversicherung (AV)',R.avan,         false, 'negativ');
   setZeile('lblRSumSV',     'wRSumSV',     'Summe Sozialversicherung',    sumSVAN,        true,  'negativ');
   setZeile('lblRNetto',     'wRNetto',     'Nettolohn',                   netto,          true,  'netto');
-  setZeile('lblRAGRV',      'wRAGRV',      'RV-Anteil Arbeitgeber',       SR.RVAG,        false, 'ag');
-  setZeile('lblRAGKV',      'wRAGKV',      'KV-Anteil / -Zuschuss AG',    SR.KVAG,        false, 'ag');
-  setZeile('lblRAGPV',      'wRAGPV',      'PV-Anteil Arbeitgeber',       SR.PVAG,        false, 'ag');
-  setZeile('lblRAGAV',      'wRAGAV',      'AV-Anteil Arbeitgeber',       SR.AVAG,        false, 'ag');
-  setZeile('lblRAGSum',     'wRAGSum',     'AG-Anteil Sozialversicherung', SR.GSAG,        true,  'ag');
-  setZeile('lblRGesAufwand','wRGesAufwand','Gesamt-Aufwand Arbeitgeber',  brutto+SR.GSAG, true,  'aufwand');
+  setZeile('lblRAGRV',      'wRAGRV',      'RV-Anteil Arbeitgeber',       R.rvag,         false, 'ag');
+  setZeile('lblRAGKV',      'wRAGKV',      'KV-Anteil / -Zuschuss AG',    R.kvag,         false, 'ag');
+  setZeile('lblRAGPV',      'wRAGPV',      'PV-Anteil Arbeitgeber',       R.pvag,         false, 'ag');
+  setZeile('lblRAGAV',      'wRAGAV',      'AV-Anteil Arbeitgeber',       R.avag,         false, 'ag');
+  setZeile('lblRAGSum',     'wRAGSum',     'AG-Anteil Sozialversicherung', R.gsag,        true,  'ag');
+  setZeile('lblRGesAufwand','wRGesAufwand','Gesamt-Aufwand Arbeitgeber',  brutto+R.gsag,  true,  'aufwand');
 
   el<HTMLButtonElement>('btnDrucken').disabled = false;
 }
