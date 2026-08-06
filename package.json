@@ -7,7 +7,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsc && copy src\\style.css docs\\style.css && copy src\\index.html docs\\index.html",
+    "build": "tsc && copy src\\app.js docs\\app.js && copy src\\style.css docs\\style.css && copy src\\index.html docs\\index.html",
     "watch": "tsc --watch",
     "start": "node server-dist/server/server.js",
     "build:server": "npx tsc -p tsconfig.server.json"
