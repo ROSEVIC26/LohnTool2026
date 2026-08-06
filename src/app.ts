@@ -216,7 +216,7 @@ async function berechnen(): Promise<void> {
     pkpv,
     pkpvagz,
     pvKinder  : parseInt((el<HTMLSelectElement>('cmbKinder')).value),
-    pvs       : (el<HTMLInputElement>('chkSachsenChk')).checked ? 1 : 0,
+    pvs       : (el<HTMLInputElement>('chkSachsen')).checked ? 1 : 0,
     pvz       : parseInt((el<HTMLSelectElement>('cmbKinder')).value) === 0 ? 1 : 0,
     krv       : (el<HTMLInputElement>('chkKeinRV')).checked ? 1 : 0,
     alv       : (el<HTMLInputElement>('chkKeinAV')).checked ? 1 : 0,

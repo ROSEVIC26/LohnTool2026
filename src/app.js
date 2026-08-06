@@ -193,7 +193,7 @@ async function berechnen() {
         pkpv,
         pkpvagz,
         pvKinder: parseInt((el('cmbKinder')).value),
-        pvs: (el('chkSachsenChk')).checked ? 1 : 0,
+        pvs: (el('chkSachsen')).checked ? 1 : 0,
         pvz: parseInt((el('cmbKinder')).value) === 0 ? 1 : 0,
         krv: (el('chkKeinRV')).checked ? 1 : 0,
         alv: (el('chkKeinAV')).checked ? 1 : 0,
