@@ -3,6 +3,7 @@
  * LohnTool 2026 – Hauptlogik (Browser)
  * Portierung von ULohnForm.pas
  */
+// Build 2
 
 // ---------------------------------------------------------------------------
 // Konstanten
