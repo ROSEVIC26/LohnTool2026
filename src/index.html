@@ -168,95 +168,94 @@
 
       <!-- Ergebnis -->
       <div class="ergebnis-panel" id="ergebnisPanel">
-        <div class="ergebnis-title">Berechnungsergebnis</div>
+
+        <div class="ergebnis-title">Brutto-Netto-Berechnung</div>
+        <div class="res-sep thick"></div>
 
         <!-- Brutto -->
-        <div class="res-sep thick"></div>
         <div class="res-row">
           <span class="res-label bold" id="lblRBrutto">Bruttolohn</span>
-          <span class="res-wert bold positiv" id="wRBrutto">–</span>
+          <span class="res-wert bold" id="wRBrutto">–</span>
         </div>
-        <div class="res-sep thick"></div>
 
         <!-- Steuern -->
         <div class="res-section-head">Steuerabzüge</div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRLST">Lohnsteuer</span>
-          <span class="res-wert negativ" id="wRLST">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRSolZ">Solidaritätszuschlag</span>
-          <span class="res-wert negativ" id="wRSolZ">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRKiSt">Kirchensteuer</span>
-          <span class="res-wert negativ" id="wRKiSt">–</span>
-        </div>
-        <div class="res-sep"></div>
         <div class="res-row">
+          <span class="res-label indent-label" id="lblRLST">Lohnsteuer</span>
+          <span class="res-wert indent-wert" id="wRLST">–</span>
+        </div>
+        <div class="res-row">
+          <span class="res-label indent-label" id="lblRSolZ">Solidaritätszuschlag</span>
+          <span class="res-wert indent-wert" id="wRSolZ">–</span>
+        </div>
+        <div class="res-row">
+          <span class="res-label indent-label" id="lblRKiSt">Kirchensteuer</span>
+          <span class="res-wert indent-wert" id="wRKiSt">–</span>
+        </div>
+        <div class="res-row summen-row">
           <span class="res-label bold" id="lblRSumSt">Summe Steuerabzüge</span>
-          <span class="res-wert bold negativ" id="wRSumSt">–</span>
+          <span class="res-wert bold" id="wRSumSt">–</span>
         </div>
 
         <!-- SV -->
-        <div class="res-section-head" style="margin-top:8px">Sozialversicherung – Arbeitnehmer</div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRRV">Rentenversicherung (RV)</span>
-          <span class="res-wert negativ" id="wRRV">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRKV">Krankenversicherung (KV)</span>
-          <span class="res-wert negativ" id="wRKV">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRPV">Pflegeversicherung (PV)</span>
-          <span class="res-wert negativ" id="wRPV">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label" id="lblRAV">Arbeitslosenversicherung (AV)</span>
-          <span class="res-wert negativ" id="wRAV">–</span>
-        </div>
-        <div class="res-sep"></div>
+        <div class="res-section-head" style="margin-top:10px">Sozialversicherungsbeiträge</div>
         <div class="res-row">
-          <span class="res-label bold" id="lblRSumSV">Summe Sozialversicherung</span>
-          <span class="res-wert bold negativ" id="wRSumSV">–</span>
+          <span class="res-label indent-label" id="lblRRV">Rentenversicherung (RV)</span>
+          <span class="res-wert indent-wert" id="wRRV">–</span>
+        </div>
+        <div class="res-row">
+          <span class="res-label indent-label" id="lblRKV">Krankenversicherung (KV)</span>
+          <span class="res-wert indent-wert" id="wRKV">–</span>
+        </div>
+        <div class="res-row">
+          <span class="res-label indent-label" id="lblRPV">Pflegeversicherung (PV)</span>
+          <span class="res-wert indent-wert" id="wRPV">–</span>
+        </div>
+        <div class="res-row">
+          <span class="res-label indent-label" id="lblRAV">Arbeitslosenversicherung (AV)</span>
+          <span class="res-wert indent-wert" id="wRAV">–</span>
+        </div>
+        <div class="res-row summen-row">
+          <span class="res-label bold" id="lblRSumSV">Summe Sozialversicherungsbeiträge</span>
+          <span class="res-wert bold" id="wRSumSV">–</span>
         </div>
 
         <!-- Netto -->
-        <div class="res-sep thick"></div>
         <div class="res-row netto-row">
           <span class="res-label bold" id="lblRNetto">Nettolohn</span>
-          <span class="res-wert bold netto" id="wRNetto">–</span>
+          <span class="res-wert bold netto-doppelt" id="wRNetto">–</span>
         </div>
-        <div class="res-sep thick"></div>
 
-        <!-- AG-Anteile -->
-        <div class="res-section-head" style="margin-top:12px">Arbeitgeber-Anteile Sozialversicherung</div>
-        <div class="res-row indent">
-          <span class="res-label ag" id="lblRAGRV">RV-Anteil Arbeitgeber</span>
-          <span class="res-wert ag" id="wRAGRV">–</span>
+        <!-- AG-Anteile (ausklappbar) -->
+        <div class="ag-toggle" onclick="toggleAG()">
+          <span id="agToggleIcon">▶</span> Arbeitgeber-Anteile Sozialversicherung
         </div>
-        <div class="res-row indent">
-          <span class="res-label ag" id="lblRAGKV">KV-Anteil / -Zuschuss AG</span>
-          <span class="res-wert ag" id="wRAGKV">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label ag" id="lblRAGPV">PV-Anteil Arbeitgeber</span>
-          <span class="res-wert ag" id="wRAGPV">–</span>
-        </div>
-        <div class="res-row indent">
-          <span class="res-label ag" id="lblRAGAV">AV-Anteil Arbeitgeber</span>
-          <span class="res-wert ag" id="wRAGAV">–</span>
-        </div>
-        <div class="res-sep"></div>
-        <div class="res-row">
-          <span class="res-label bold ag" id="lblRAGSum">AG-Anteil Sozialversicherung</span>
-          <span class="res-wert bold ag" id="wRAGSum">–</span>
-        </div>
-        <div class="res-sep thick"></div>
-        <div class="res-row">
-          <span class="res-label bold" id="lblRGesAufwand">Gesamt-Aufwand Arbeitgeber</span>
-          <span class="res-wert bold aufwand" id="wRGesAufwand">–</span>
+
+        <div class="ag-bereich" id="agBereich" style="display:none">
+          <div class="res-row">
+            <span class="res-label indent-label" id="lblRAGRV">RV-Anteil Arbeitgeber</span>
+            <span class="res-wert indent-wert" id="wRAGRV">–</span>
+          </div>
+          <div class="res-row">
+            <span class="res-label indent-label" id="lblRAGKV">KV-Anteil / -Zuschuss AG</span>
+            <span class="res-wert indent-wert" id="wRAGKV">–</span>
+          </div>
+          <div class="res-row">
+            <span class="res-label indent-label" id="lblRAGPV">PV-Anteil Arbeitgeber</span>
+            <span class="res-wert indent-wert" id="wRAGPV">–</span>
+          </div>
+          <div class="res-row">
+            <span class="res-label indent-label" id="lblRAGAV">AV-Anteil Arbeitgeber</span>
+            <span class="res-wert indent-wert" id="wRAGAV">–</span>
+          </div>
+          <div class="res-row summen-row">
+            <span class="res-label bold" id="lblRAGSum">AG-Anteil Sozialversicherung</span>
+            <span class="res-wert bold" id="wRAGSum">–</span>
+          </div>
+          <div class="res-row summen-row">
+            <span class="res-label bold" id="lblRGesAufwand">Gesamt-Aufwand Arbeitgeber</span>
+            <span class="res-wert bold" id="wRGesAufwand">–</span>
+          </div>
         </div>
 
       </div><!-- /ergebnisPanel -->

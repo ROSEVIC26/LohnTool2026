@@ -1,10 +1,9 @@
 /* ============================================================
    LohnTool 2026 – Stylesheet
-   Farbgebung: Braun/Orange-Akzent wie die Delphi-Anwendung
    ============================================================ */
 
 :root {
-  --clr-header     : #003366;   /* Dunkelblau */
+  --clr-header     : #003366;
   --clr-header-sub : #7AAAD0;
   --clr-bg         : #F0F3F7;
   --clr-panel-l    : #E8EDF4;
@@ -12,11 +11,7 @@
   --clr-footer     : #E8EDF4;
   --clr-border     : #C0CCD8;
   --clr-accent     : #004A99;
-  --clr-positiv    : #006000;
-  --clr-negativ    : #8B0000;
   --clr-netto      : #003366;
-  --clr-ag         : #777777;
-  --clr-aufwand    : #002244;
   --clr-input-text : #002244;
   --clr-input-bg   : #F5F8FC;
   --clr-group-head : #003366;
@@ -44,11 +39,10 @@ html, body {
   min-height: 100vh;
 }
 
-/* Header */
 .app-header {
   background: var(--clr-header);
   color: #fff;
-  padding: 10px 20px 10px;
+  padding: 10px 20px;
   display: flex;
   align-items: baseline;
   gap: 14px;
@@ -67,7 +61,6 @@ html, body {
   color: var(--clr-header-sub);
 }
 
-/* Body */
 .app-body {
   display: flex;
   flex: 1;
@@ -75,18 +68,16 @@ html, body {
   overflow: auto;
 }
 
-/* Linke Spalte: Eingaben */
 .col-left {
   width: 390px;
   min-width: 300px;
   flex-shrink: 0;
   background: var(--clr-panel-l);
-  padding: 14px 14px;
+  padding: 14px;
   border-right: 1px solid var(--clr-border);
   overflow-y: auto;
 }
 
-/* Rechte Spalte: Ergebnisse */
 .col-right {
   flex: 1;
   background: var(--clr-panel-r);
@@ -94,7 +85,6 @@ html, body {
   overflow-y: auto;
 }
 
-/* Footer */
 .app-footer {
   background: var(--clr-footer);
   border-top: 1px solid var(--clr-border);
@@ -117,7 +107,6 @@ html, body {
   overflow: hidden;
 }
 
-.group-box legend,
 .group-head {
   font-size: 11.5px;
   font-weight: 700;
@@ -125,7 +114,7 @@ html, body {
   text-transform: uppercase;
   letter-spacing: .5px;
   padding: 5px 10px 4px;
-  background: #F0EAE0;
+  background: #E8EDF4;
   border-bottom: 1px solid var(--clr-border);
   display: block;
   width: 100%;
@@ -175,10 +164,9 @@ html, body {
 .field-row select:focus {
   outline: none;
   border-color: var(--clr-accent);
-  box-shadow: 0 0 0 2px rgba(139,69,0,.12);
+  box-shadow: 0 0 0 2px rgba(0,74,153,.12);
 }
 
-/* Jahr-Input neben Monat */
 .monat-row {
   display: flex;
   align-items: center;
@@ -190,7 +178,6 @@ html, body {
 .monat-row span   { color: #888; }
 .monat-row input  { width: 70px; flex: 0 0 70px; text-align: center; }
 
-/* Checkboxen / Radiobuttons */
 .check-row {
   display: flex;
   align-items: center;
@@ -207,15 +194,12 @@ html, body {
   margin-bottom: 6px;
 }
 
-.radio-group label { font-size: 13px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
-
-/* Kleine Hinweis-Texte */
-.hint {
-  font-size: 11px;
-  color: #888;
-  margin-top: -2px;
-  margin-bottom: 4px;
-  padding-left: 136px;
+.radio-group label {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
 }
 
 /* ============================================================
@@ -224,95 +208,132 @@ html, body {
 
 .ergebnis-panel {
   display: none;
+  max-width: 520px;
 }
 
 .ergebnis-panel.visible {
   display: block;
 }
 
+/* Überschrift */
 .ergebnis-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--clr-accent);
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 2px solid var(--clr-accent);
+  color: var(--clr-netto);
+  margin-bottom: 6px;
 }
 
-/* Tabellen-ähnliche Zeilen */
+/* Linie unter Überschrift */
+.res-sep { display: none; }
+.res-sep.thick {
+  display: block;
+  height: 2px;
+  background: #000;
+  margin: 0 0 10px;
+}
+
+/* Abschnittsköpfe */
+.res-section-head {
+  font-size: 12px;
+  font-weight: 400;
+  color: #000;
+  margin: 8px 0 2px;
+}
+
+/* Zeilen */
 .res-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 3px 4px;
-  border-radius: 3px;
+  padding: 1px 0;
 }
 
-.res-row:hover { background: #F8F4EE; }
-
-.res-label { font-size: 13px; color: #333; flex: 1; }
-.res-wert  { font-size: 13px; text-align: right; min-width: 110px; font-feature-settings: "tnum"; }
-
-.res-label.bold,
-.res-wert.bold  { font-weight: 700; }
-
-/* Farbige Werte */
-.res-wert.positiv  { color: var(--clr-positiv); }
-.res-wert.negativ  { color: var(--clr-negativ); }
-.res-wert.netto    { color: var(--clr-netto); }
-.res-wert.ag       { color: var(--clr-ag); }
-.res-wert.aufwand  { color: var(--clr-aufwand); }
-
-.res-label.ag      { color: #888; }
-
-/* Trennlinien */
-.res-sep {
-  height: 1px;
-  background: var(--clr-border);
-  margin: 4px 0;
+/* Labels */
+.res-label {
+  font-size: 13px;
+  color: #000;
+  flex: 1;
 }
 
-.res-sep.thick {
-  height: 2px;
-  background: var(--clr-accent);
-  margin: 5px 0;
+.res-label.bold { font-weight: 700; }
+
+/* Eingerückte Labels */
+.res-label.indent-label {
+  padding-left: 16px;
+  font-size: 13px;
+  color: #000;
+  flex: 1;
 }
 
-/* Netto-Zeile hervorheben */
-.res-row.netto-row {
-  background: #EFF5FB;
-  border-radius: 4px;
-  padding: 5px 4px;
-  margin: 2px 0;
+/* Beträge ganz rechts */
+.res-wert {
+  font-size: 13px;
+  color: #000;
+  text-align: right;
+  min-width: 100px;
+  font-feature-settings: "tnum";
 }
 
-/* AG-Abschnitt dezenter */
-.res-section-head {
-  font-size: 11px;
+.res-wert.bold { font-weight: 700; }
+
+/* Eingerückte Beträge – etwas weiter links */
+.res-wert.indent-wert {
+  min-width: 100px;
+  margin-right: 80px;
+}
+
+/* Summenzeilen: Linie nur über dem Betrag */
+.summen-row .res-wert {
+  border-top: 1px solid #000;
+  padding-top: 1px;
+  margin-top: 2px;
+}
+
+/* Nettolohn-Zeile */
+.netto-row {
+  margin-top: 4px;
+}
+
+/* Nettobetrag doppelt unterstrichen */
+.netto-doppelt {
+  display: inline-block;
+  border-top: 1px solid #000;
+  border-bottom: 3px double #000;
+  padding-top: 1px;
+  padding-bottom: 3px;
+  margin-top: 2px;
+}
+
+/* AG-Toggle */
+.ag-toggle {
+  margin-top: 14px;
+  font-size: 12px;
   font-weight: 700;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-  margin: 10px 0 3px;
+  color: #000;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+  border-top: 1px solid #ccc;
 }
 
-/* Einrückung für Unterzeilen */
-.res-row.indent .res-label { padding-left: 14px; }
+.ag-toggle:hover { opacity: .7; }
 
-/* Placeholder (vor erster Berechnung) */
+.ag-bereich {
+  margin-top: 4px;
+}
+
+/* Placeholder */
 .ergebnis-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 200px;
-  color: #C0B090;
+  color: #aaa;
   gap: 10px;
 }
 
-.ergebnis-placeholder svg {
-  opacity: .35;
-}
+.ergebnis-placeholder svg { opacity: .3; }
 
 .ergebnis-placeholder p {
   font-size: 13px;
@@ -339,7 +360,7 @@ button {
   font-weight: 700;
 }
 
-.btn-primary:hover { background: #703800; }
+.btn-primary:hover { background: #003380; }
 
 .btn-secondary {
   background: #DDD5C8;
@@ -361,7 +382,7 @@ button:disabled {
 }
 
 /* ============================================================
-   RESPONSIV (schmale Fenster)
+   RESPONSIV
    ============================================================ */
 
 @media (max-width: 780px) {

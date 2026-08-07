@@ -265,23 +265,23 @@ async function berechnen(): Promise<void> {
   el('ergebnisPanel').classList.add('visible');
   el('placeholder').style.display = 'none';
 
-  setZeile('lblRBrutto',    'wRBrutto',    'Bruttolohn',                  brutto,         true,  'positiv');
-  setZeile('lblRLST',       'wRLST',       'Lohnsteuer',                  R.lstlzz,       false, 'negativ');
-  setZeile('lblRSolZ',      'wRSolZ',      'Solidaritätszuschlag',        R.solzlzz,      false, 'negativ');
-  setZeile('lblRKiSt',      'wRKiSt',      'Kirchensteuer',               R.kiSt,         false, 'negativ');
-  setZeile('lblRSumSt',     'wRSumSt',     'Summe Steuerabzüge',          sumSt,          true,  'negativ');
-  setZeile('lblRRV',        'wRRV',        'Rentenversicherung (RV)',      R.rvan,         false, 'negativ');
-  setZeile('lblRKV',        'wRKV',        'Krankenversicherung (KV)',     R.kvan,         false, 'negativ');
-  setZeile('lblRPV',        'wRPV',        'Pflegeversicherung (PV)',      R.pvan,         false, 'negativ');
-  setZeile('lblRAV',        'wRAV',        'Arbeitslosenversicherung (AV)',R.avan,         false, 'negativ');
-  setZeile('lblRSumSV',     'wRSumSV',     'Summe Sozialversicherung',    sumSVAN,        true,  'negativ');
-  setZeile('lblRNetto',     'wRNetto',     'Nettolohn',                   netto,          true,  'netto');
-  setZeile('lblRAGRV',      'wRAGRV',      'RV-Anteil Arbeitgeber',       R.rvag,         false, 'ag');
-  setZeile('lblRAGKV',      'wRAGKV',      'KV-Anteil / -Zuschuss AG',    R.kvag,         false, 'ag');
-  setZeile('lblRAGPV',      'wRAGPV',      'PV-Anteil Arbeitgeber',       R.pvag,         false, 'ag');
-  setZeile('lblRAGAV',      'wRAGAV',      'AV-Anteil Arbeitgeber',       R.avag,         false, 'ag');
+  setZeile('lblRBrutto',    'wRBrutto',    'Bruttolohn',                   brutto,         true,  'positiv');
+  setZeile('lblRLST',       'wRLST',       'Lohnsteuer',                   R.lstlzz,  false, 'indent-wert');
+  setZeile('lblRSolZ',      'wRSolZ',      'Solidaritätszuschlag',         R.solzlzz, false, 'indent-wert');
+  setZeile('lblRKiSt',      'wRKiSt',      'Kirchensteuer',                R.kiSt,    false, 'indent-wert');
+  setZeile('lblRSumSt',     'wRSumSt',     'Summe Steuerabzüge',           sumSt,          true,  'negativ');
+  setZeile('lblRRV',        'wRRV',        'Rentenversicherung (RV)',      R.rvan, false, 'indent-wert');
+  setZeile('lblRKV',        'wRKV',        'Krankenversicherung (KV)',     R.kvan, false, 'indent-wert');
+  setZeile('lblRPV',        'wRPV',        'Pflegeversicherung (PV)',      R.pvan, false, 'indent-wert');
+  setZeile('lblRAV',        'wRAV',        'Arbeitslosenversicherung (AV)',R.avan, false, 'indent-wert');
+  setZeile('lblRSumSV',     'wRSumSV',     'Summe Sozialversicherungsbeiträge', sumSVAN, true, '');
+  setZeile('lblRNetto',     'wRNetto',     'Nettolohn',                    netto,          true,  'netto-doppelt');
+  setZeile('lblRAGRV',      'wRAGRV',      'RV-Anteil Arbeitgeber',        R.rvag, false, 'indent-wert');
+  setZeile('lblRAGKV',      'wRAGKV',      'KV-Anteil / -Zuschuss AG',     R.kvag, false, 'indent-wert');
+  setZeile('lblRAGPV',      'wRAGPV',      'PV-Anteil Arbeitgeber',        R.pvag, false, 'indent-wert');
+  setZeile('lblRAGAV',      'wRAGAV',      'AV-Anteil Arbeitgeber',        R.avag, false, 'indent-wert');
   setZeile('lblRAGSum',     'wRAGSum',     'AG-Anteil Sozialversicherung', R.gsag,        true,  'ag');
-  setZeile('lblRGesAufwand','wRGesAufwand','Gesamt-Aufwand Arbeitgeber',  brutto+R.gsag,  true,  'aufwand');
+  setZeile('lblRGesAufwand','wRGesAufwand','Gesamt-Aufwand Arbeitgeber',   brutto+R.gsag,  true,  'aufwand');
 
   el<HTMLButtonElement>('btnDrucken').disabled = false;
 }
@@ -418,4 +418,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') berechnen();
   });
+
+  (window as any).toggleAG = function() {
+    const bereich = document.getElementById('agBereich');
+    const icon    = document.getElementById('agToggleIcon');
+    if (!bereich || !icon) return;
+    if (bereich.style.display === 'none') {
+      bereich.style.display = 'block';
+      icon.textContent = '▼';
+    } else {
+      bereich.style.display = 'none';
+      icon.textContent = '▶';
+    }
+  };
 });
