@@ -215,6 +215,7 @@ async function berechnen() {
         gebJahr,
     };
     let R;
+    document.body.style.cursor = 'wait';
     try {
         const response = await fetch('https://lohntool2026.onrender.com/api/berechne', {
             method: 'POST',
@@ -228,6 +229,9 @@ async function berechnen() {
     catch (err) {
         alert('Verbindung zum Server fehlgeschlagen.\nLäuft der Server?\n\n' + err);
         return;
+    }
+    finally {
+        document.body.style.cursor = '';
     }
     // Ergebnisse speichern für Druck
     gBruttoCent = brutto;
