@@ -13,6 +13,11 @@ const MONATE = [
   'Juli','August','September','Oktober','November','Dezember'
 ];
 
+// Unterstützte Jahre. Erweitern, sobald ein weiterer Jahrgang
+// (PAP + SV-Rechengrößen) implementiert ist, siehe css-namenskonvention.md
+// bzw. das Architektur-Vorhaben zur Jahrestrennung.
+const JAHRE = [2026];
+
 const BUNDESLAENDER = [
   'Baden-Württemberg','Bayern','Berlin','Brandenburg','Bremen',
   'Hamburg','Hessen','Mecklenburg-Vorpommern','Niedersachsen',
@@ -75,7 +80,14 @@ function initControls(): void {
   cmbMonat.value = String(now.getMonth() + 1);
 
   // Jahr
-  (el<HTMLInputElement>('spnJahr')).value = String(now.getFullYear());
+  const cmbJahr = el<HTMLSelectElement>('cmbJahr');
+  JAHRE.forEach((j) => {
+    const opt = document.createElement('option');
+    opt.value = String(j);
+    opt.textContent = String(j);
+    cmbJahr.appendChild(opt);
+  });
+  cmbJahr.value = String(JAHRE[0]);
 
   // Bundesländer
   const cmbBundesland = el<HTMLSelectElement>('cmbBundesland');
@@ -294,7 +306,7 @@ function drucken(): void {
 
   const name      = el<HTMLInputElement>('edtName').value;
   const monatIdx  = parseInt((el<HTMLSelectElement>('cmbMonat')).value) - 1;
-  const jahr      = el<HTMLInputElement>('spnJahr').value;
+  const jahr      = el<HTMLSelectElement>('cmbJahr').value;
   const monatStr  = MONATE[monatIdx] + ' ' + jahr;
   const bundesland = BUNDESLAENDER[parseInt((el<HTMLSelectElement>('cmbBundesland')).value)];
   const kist      = kiStSatz();

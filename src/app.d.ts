@@ -4,6 +4,7 @@
  * Portierung von ULohnForm.pas
  */
 declare const MONATE: string[];
+declare const JAHRE: number[];
 declare const BUNDESLAENDER: string[];
 declare const KISTSAETZE: number[];
 declare let gLSTResult: any;
