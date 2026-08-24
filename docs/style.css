@@ -224,8 +224,8 @@ html, body {
 }
 
 /* Linie unter Überschrift */
-.res-sep { display: none; }
-.res-sep.thick {
+.ergebnis-sep { display: none; }
+.ergebnis-sep.thick {
   display: block;
   height: 2px;
   background: #000;
@@ -233,7 +233,7 @@ html, body {
 }
 
 /* Abschnittsköpfe */
-.res-section-head {
+.ergebnis-section-head {
   font-size: 12px;
   font-weight: 400;
   color: #000;
@@ -241,7 +241,7 @@ html, body {
 }
 
 /* Zeilen */
-.res-row {
+.ergebnis-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -249,16 +249,16 @@ html, body {
 }
 
 /* Labels */
-.res-label {
+.ergebnis-label {
   font-size: 13px;
   color: #000;
   flex: 1;
 }
 
-.res-label.bold { font-weight: 700; }
+.ergebnis-label.bold { font-weight: 700; }
 
 /* Eingerückte Labels */
-.res-label.indent-label {
+.ergebnis-label.indent {
   padding-left: 16px;
   font-size: 13px;
   color: #000;
@@ -266,7 +266,7 @@ html, body {
 }
 
 /* Beträge ganz rechts */
-.res-wert {
+.ergebnis-wert {
   font-size: 13px;
   color: #000;
   text-align: right;
@@ -274,16 +274,16 @@ html, body {
   font-feature-settings: "tnum";
 }
 
-.res-wert.bold { font-weight: 700; }
+.ergebnis-wert.bold { font-weight: 700; }
 
 /* Eingerückte Beträge – etwas weiter links */
-.res-wert.indent-wert {
+.ergebnis-wert.indent {
   min-width: 100px;
   margin-right: 80px;
 }
 
 /* Summenzeilen: Linie nur über dem Betrag */
-.summen-row .res-wert {
+.summen-row .ergebnis-wert {
   border-top: 1px solid #000;
   padding-top: 1px;
   margin-top: 2px;

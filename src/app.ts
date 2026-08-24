@@ -164,8 +164,8 @@ function setZeile(
   lbl.textContent  = beschriftung;
   wert.textContent = fmtEuro(cent);
 
-  lbl.className  = bold ? 'res-label bold' : 'res-label';
-  wert.className = bold ? `res-wert bold ${cssClass}` : `res-wert ${cssClass}`;
+  lbl.className  = bold ? 'ergebnis-label bold' : 'ergebnis-label';
+  wert.className = bold ? `ergebnis-wert bold ${cssClass}` : `ergebnis-wert ${cssClass}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -266,20 +266,20 @@ async function berechnen(): Promise<void> {
   el('placeholder').style.display = 'none';
 
   setZeile('lblRBrutto',    'wRBrutto',    'Bruttolohn',                   brutto,         true,  'positiv');
-  setZeile('lblRLST',       'wRLST',       'Lohnsteuer',                   R.lstlzz,  false, 'indent-wert');
-  setZeile('lblRSolZ',      'wRSolZ',      'Solidaritätszuschlag',         R.solzlzz, false, 'indent-wert');
-  setZeile('lblRKiSt',      'wRKiSt',      'Kirchensteuer',                R.kiSt,    false, 'indent-wert');
+  setZeile('lblRLST',       'wRLST',       'Lohnsteuer',                   R.lstlzz,  false, 'indent');
+  setZeile('lblRSolZ',      'wRSolZ',      'Solidaritätszuschlag',         R.solzlzz, false, 'indent');
+  setZeile('lblRKiSt',      'wRKiSt',      'Kirchensteuer',                R.kiSt,    false, 'indent');
   setZeile('lblRSumSt',     'wRSumSt',     'Summe Steuerabzüge',           sumSt,          true,  'negativ');
-  setZeile('lblRRV',        'wRRV',        'Rentenversicherung (RV)',      R.rvan, false, 'indent-wert');
-  setZeile('lblRKV',        'wRKV',        'Krankenversicherung (KV)',     R.kvan, false, 'indent-wert');
-  setZeile('lblRPV',        'wRPV',        'Pflegeversicherung (PV)',      R.pvan, false, 'indent-wert');
-  setZeile('lblRAV',        'wRAV',        'Arbeitslosenversicherung (AV)',R.avan, false, 'indent-wert');
+  setZeile('lblRRV',        'wRRV',        'Rentenversicherung (RV)',      R.rvan, false, 'indent');
+  setZeile('lblRKV',        'wRKV',        'Krankenversicherung (KV)',     R.kvan, false, 'indent');
+  setZeile('lblRPV',        'wRPV',        'Pflegeversicherung (PV)',      R.pvan, false, 'indent');
+  setZeile('lblRAV',        'wRAV',        'Arbeitslosenversicherung (AV)',R.avan, false, 'indent');
   setZeile('lblRSumSV',     'wRSumSV',     'Summe Sozialversicherungsbeiträge', sumSVAN, true, '');
   setZeile('lblRNetto',     'wRNetto',     'Nettolohn',                    netto,          true,  'netto-doppelt');
-  setZeile('lblRAGRV',      'wRAGRV',      'RV-Anteil Arbeitgeber',        R.rvag, false, 'indent-wert');
-  setZeile('lblRAGKV',      'wRAGKV',      'KV-Anteil / -Zuschuss AG',     R.kvag, false, 'indent-wert');
-  setZeile('lblRAGPV',      'wRAGPV',      'PV-Anteil Arbeitgeber',        R.pvag, false, 'indent-wert');
-  setZeile('lblRAGAV',      'wRAGAV',      'AV-Anteil Arbeitgeber',        R.avag, false, 'indent-wert');
+  setZeile('lblRAGRV',      'wRAGRV',      'RV-Anteil Arbeitgeber',        R.rvag, false, 'indent');
+  setZeile('lblRAGKV',      'wRAGKV',      'KV-Anteil / -Zuschuss AG',     R.kvag, false, 'indent');
+  setZeile('lblRAGPV',      'wRAGPV',      'PV-Anteil Arbeitgeber',        R.pvag, false, 'indent');
+  setZeile('lblRAGAV',      'wRAGAV',      'AV-Anteil Arbeitgeber',        R.avag, false, 'indent');
   setZeile('lblRAGSum',     'wRAGSum',     'AG-Anteil Sozialversicherung', R.gsag,        true,  'ag');
   setZeile('lblRGesAufwand','wRGesAufwand','Gesamt-Aufwand Arbeitgeber',   brutto+R.gsag,  true,  'aufwand');
 
