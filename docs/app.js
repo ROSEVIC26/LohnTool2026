@@ -1,8 +1,12 @@
 "use strict";
 /**
  * app.ts
- * LohnTool 2026 – Hauptlogik (Browser)
+ * LohnTool – Hauptlogik (Browser), jahresübergreifend
  * Portierung von ULohnForm.pas
+ *
+ * Die Berechnung läuft auf dem Server; das gewählte Abrechnungsjahr wird
+ * als Feld `jahr` mitgeschickt. Welche Jahre es gibt, liefert GET /api/jahre
+ * (Quelle: src/Jahresversionen.ts). Die Erfassungsmaske ist für alle Jahre gleich.
  */
 // Build 2
 // ---------------------------------------------------------------------------
@@ -12,10 +16,11 @@ const MONATE = [
     'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
     'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
 ];
-// Unterstützte Jahre. Erweitern, sobald ein weiterer Jahrgang
-// (PAP + SV-Rechengrößen) implementiert ist, siehe css-namenskonvention.md
-// bzw. das Architektur-Vorhaben zur Jahrestrennung.
-const JAHRE = [2026];
+const API_BASIS = 'https://lohntool2026.onrender.com';
+let JAHRE = [
+    { jahr: 2026, status: 'endgueltig', stand: 'PAP 2026 (BMF-Schreiben 12.11.2025) · SV-Rechengrößen-VO 2026', hinweise: [] },
+    { jahr: 2027, status: 'vorlaeufig', stand: 'PAP-Entwurf 2027 (BMF 08.10.2026) · SV-Rechengrößen 2027 (Kabinettsentwurf)', hinweise: [] },
+];
 const BUNDESLAENDER = [
     'Baden-Württemberg', 'Bayern', 'Berlin', 'Brandenburg', 'Bremen',
     'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern', 'Niedersachsen',
@@ -33,6 +38,8 @@ let gLSTResult = null;
 let gSVResult = null;
 let gBruttoCent = 0;
 let gKiStCent = 0;
+let gJahrInfo = null; // Jahresversion der letzten Berechnung
+let gPKVZuschuss = 0; // steuerfreier AG-Zuschuss PKV/PPV (nur PKV)
 // ---------------------------------------------------------------------------
 // Hilfsfunktionen
 // ---------------------------------------------------------------------------
@@ -55,6 +62,76 @@ function parseEuroCent(value, feldname) {
 function el(id) {
     return document.getElementById(id);
 }
+function jahrInfo(jahr) {
+    return JAHRE.find(j => j.jahr === jahr);
+}
+function gewaehltesJahr() {
+    return parseInt(el('cmbJahr').value);
+}
+/** Lädt die unterstützten Jahre vom Server; bei Fehler bleibt der Fallback */
+async function ladeJahre() {
+    try {
+        const r = await fetch(API_BASIS + '/api/jahre');
+        if (!r.ok)
+            return;
+        const d = await r.json();
+        if (Array.isArray(d.jahre) && d.jahre.length)
+            JAHRE = d.jahre;
+    }
+    catch {
+        /* Fallback-Liste bleibt */
+    }
+}
+/** Vorbelegung: aktuelles Kalenderjahr, sofern unterstützt, sonst nächstliegendes */
+function standardJahr() {
+    const j = new Date().getFullYear();
+    if (jahrInfo(j))
+        return j;
+    const liste = JAHRE.map(x => x.jahr).sort((a, b) => a - b);
+    return j < liste[0] ? liste[0] : liste[liste.length - 1];
+}
+function fuelleJahre(vorbelegung) {
+    const cmbJahr = el('cmbJahr');
+    cmbJahr.innerHTML = '';
+    JAHRE.forEach((j) => {
+        const opt = document.createElement('option');
+        opt.value = String(j.jahr);
+        // Feld ist schmal (90 px): vorläufige Jahre mit * kennzeichnen, Details im Hinweisband
+        opt.textContent = j.status === 'vorlaeufig' ? `${j.jahr} *` : String(j.jahr);
+        if (j.status === 'vorlaeufig')
+            opt.title = 'vorläufig – Entwurfsstand';
+        cmbJahr.appendChild(opt);
+    });
+    cmbJahr.value = String(jahrInfo(vorbelegung) ? vorbelegung : standardJahr());
+    aktualisiereJahr();
+}
+/** Kopfzeile, Fenstertitel und Hinweisband an das gewählte Jahr anpassen */
+function aktualisiereJahr() {
+    const info = jahrInfo(gewaehltesJahr());
+    if (!info)
+        return;
+    el('appTitel').textContent = `LohnTool ${info.jahr}`;
+    el('jahrStand').textContent = info.stand;
+    document.title = `LohnTool ${info.jahr} · Brutto-Netto-Berechnung`;
+    const band = el('jahrHinweis');
+    if (info.status === 'vorlaeufig') {
+        const details = info.hinweise.length ? ' ' + info.hinweise.join(' ') : '';
+        band.innerHTML = `<b>Vorläufige Berechnung ${info.jahr}:</b> beruht auf Entwürfen, Werte können sich noch ändern.${details}`;
+        band.hidden = false;
+    }
+    else {
+        band.hidden = true;
+    }
+    // Ergebnis eines anderen Jahres nicht stehen lassen
+    if (gJahrInfo && gJahrInfo.jahr !== info.jahr) {
+        el('ergebnisPanel').classList.remove('visible');
+        el('placeholder').style.display = '';
+        el('btnDrucken').disabled = true;
+        gLSTResult = null;
+        gSVResult = null;
+        gJahrInfo = null;
+    }
+}
 // ---------------------------------------------------------------------------
 // Initialisierung
 // ---------------------------------------------------------------------------
@@ -69,15 +146,8 @@ function initControls() {
         cmbMonat.appendChild(opt);
     });
     cmbMonat.value = String(now.getMonth() + 1);
-    // Jahr
-    const cmbJahr = el('cmbJahr');
-    JAHRE.forEach((j) => {
-        const opt = document.createElement('option');
-        opt.value = String(j);
-        opt.textContent = String(j);
-        cmbJahr.appendChild(opt);
-    });
-    cmbJahr.value = String(JAHRE[0]);
+    // Jahr (sofort mit Fallback-Liste, wird nach /api/jahre aktualisiert)
+    fuelleJahre(standardJahr());
     // Bundesländer
     const cmbBundesland = el('cmbBundesland');
     BUNDESLAENDER.forEach((b, i) => {
@@ -93,8 +163,9 @@ function initControls() {
     el('edtKVZ').value = '2,90';
     el('edtKFB').value = '0,0';
     el('edtGebJahr').value = '';
-    el('edtPKVBeitrag').value = '0,00';
-    el('edtPKVAGZusch').value = '0,00';
+    el('edtPKVBeitragKV').value = '0,00';
+    el('edtPKVBasisKV').value = '';
+    el('edtPKVBeitragPV').value = '0,00';
     (el('rdoGKV')).checked = true;
     aktualisiereSVFelder();
     aktualisiereKiStFelder();
@@ -102,7 +173,7 @@ function initControls() {
 function aktualisiereSVFelder() {
     const gkv = (el('rdoGKV')).checked;
     const gkvElems = ['lblKVZ', 'edtKVZ', 'lblKinder', 'cmbKinder', 'sachsenRow'];
-    const pkvElems = ['lblPKVBeitrag', 'edtPKVBeitrag', 'lblPKVAGZusch', 'edtPKVAGZusch'];
+    const pkvElems = ['rowPKVBeitragKV', 'rowPKVBasisKV', 'rowPKVBeitragPV'];
     gkvElems.forEach(id => {
         const e = document.getElementById(id);
         if (e)
@@ -185,25 +256,47 @@ async function berechnen() {
     }
     const kvzStr = el('edtKVZ').value.replace(',', '.');
     const kvz = parseFloat(kvzStr) || 2.90;
-    let pkpv = 0, pkpvagz = 0;
-    if ((el('rdoPKV')).checked) {
-        const p1 = parseEuroCent(el('edtPKVBeitrag').value, 'PKV-Beitrag');
-        const p2 = parseEuroCent(el('edtPKVAGZusch').value, 'AG-Zuschuss');
-        if (p1 === null || p2 === null)
+    const istPKV = (el('rdoPKV')).checked;
+    let pkvBeitragKV = 0, pkvBeitragPV = 0;
+    let pkvBasisKV;
+    if (istPKV) {
+        const kv = parseEuroCent(el('edtPKVBeitragKV').value, 'KV-Beitrag');
+        if (kv === null)
             return;
-        pkpv = p1;
-        pkpvagz = p2;
+        const pv = parseEuroCent(el('edtPKVBeitragPV').value, 'PV-Beitrag');
+        if (pv === null)
+            return;
+        pkvBeitragKV = kv;
+        pkvBeitragPV = pv;
+        const basisText = el('edtPKVBasisKV').value.trim();
+        if (basisText !== '') {
+            const b = parseEuroCent(basisText, 'Basis-KV');
+            if (b === null)
+                return;
+            if (b > kv) {
+                alert('Basis-KV: darf nicht höher sein als der KV-Beitrag.');
+                return;
+            }
+            pkvBasisKV = b;
+        }
+        if (kv === 0 && pv === 0) {
+            alert('Private KV: Bitte den KV- und PV-Beitrag eintragen.');
+            return;
+        }
     }
     // Anfrage an den Server
+    const jahr = gewaehltesJahr();
     const anfrage = {
+        jahr,
         brutto,
         freibet,
         stkl: parseInt((el('cmbStkl')).value),
         zkf: kfbVal,
         kvz,
-        pkv: (el('rdoPKV')).checked ? 1 : 0,
-        pkpv,
-        pkpvagz,
+        pkv: istPKV ? 1 : 0,
+        pkvBeitragKV,
+        pkvBeitragPV,
+        pkvBasisKV,
         pvKinder: parseInt((el('cmbKinder')).value),
         pvs: (el('chkSachsen')).checked ? 1 : 0,
         pvz: parseInt((el('cmbKinder')).value) === 0 ? 1 : 0,
@@ -217,14 +310,20 @@ async function berechnen() {
     let R;
     document.body.style.cursor = 'wait';
     try {
-        const response = await fetch('https://lohntool2026.onrender.com/api/berechne', {
+        const response = await fetch(API_BASIS + '/api/berechne', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(anfrage),
         });
-        if (!response.ok)
-            throw new Error('Server-Fehler: ' + response.status);
+        if (!response.ok) {
+            const t = await response.json().catch(() => null);
+            throw new Error(t?.fehler ?? ('Server-Fehler: ' + response.status));
+        }
         R = await response.json();
+        // Älterer Server ohne Jahresweiche rechnet immer 2026 – nicht stillschweigend übernehmen
+        if ((R.jahr ?? 2026) !== jahr) {
+            throw new Error(`Der Server unterstützt das Jahr ${jahr} noch nicht (Antwort für ${R.jahr ?? 2026}).`);
+        }
     }
     catch (err) {
         alert('Verbindung zum Server fehlgeschlagen.\nLäuft der Server?\n\n' + err);
@@ -236,6 +335,10 @@ async function berechnen() {
     // Ergebnisse speichern für Druck
     gBruttoCent = brutto;
     gKiStCent = R.kiSt;
+    gPKVZuschuss = istPKV ? (R.pkvZuschuss ?? (R.kvag + R.pvag)) : 0;
+    gJahrInfo = {
+        jahr, status: R.status ?? 'endgueltig', stand: R.stand ?? '', hinweise: R.hinweise ?? []
+    };
     gLSTResult = {
         LSTLZZ: R.lstlzz, SOLZLZZ: R.solzlzz, BK: R.bk,
         STS: 0, SOLZS: 0, BKS: 0, VFRB: 0, VFRBS1: 0, VFRBS2: 0,
@@ -265,6 +368,12 @@ async function berechnen() {
     setZeile('lblRAV', 'wRAV', 'Arbeitslosenversicherung (AV)', R.avan, false, 'indent');
     setZeile('lblRSumSV', 'wRSumSV', 'Summe Sozialversicherungsbeiträge', sumSVAN, true, '');
     setZeile('lblRNetto', 'wRNetto', 'Nettolohn', netto, true, 'netto-doppelt');
+    el('rowRPKVZusch').style.display = istPKV ? '' : 'none';
+    el('rowRAuszahlung').style.display = istPKV ? '' : 'none';
+    if (istPKV) {
+        setZeile('lblRPKVZusch', 'wRPKVZusch', '+ AG-Zuschuss KV/PV (steuerfrei)', gPKVZuschuss, false, 'indent');
+        setZeile('lblRAuszahlung', 'wRAuszahlung', 'Auszahlungsbetrag', netto + gPKVZuschuss, true, '');
+    }
     setZeile('lblRAGRV', 'wRAGRV', 'RV-Anteil Arbeitgeber', R.rvag, false, 'indent');
     setZeile('lblRAGKV', 'wRAGKV', 'KV-Anteil / -Zuschuss AG', R.kvag, false, 'indent');
     setZeile('lblRAGPV', 'wRAGPV', 'PV-Anteil Arbeitgeber', R.pvag, false, 'indent');
@@ -281,7 +390,9 @@ function drucken() {
         return;
     const name = el('edtName').value;
     const monatIdx = parseInt((el('cmbMonat')).value) - 1;
-    const jahr = el('cmbJahr').value;
+    const info = gJahrInfo;
+    const jahr = String(info.jahr);
+    const vorl = info.status === 'vorlaeufig';
     const monatStr = MONATE[monatIdx] + ' ' + jahr;
     const bundesland = BUNDESLAENDER[parseInt((el('cmbBundesland')).value)];
     const kist = kiStSatz();
@@ -322,9 +433,11 @@ function drucken() {
 </style>
 </head><body>
 <div class="header">
-  <h1>LohnTool 2026 &nbsp;·&nbsp; Lohnabrechnung</h1>
-  <div class="sub">Brutto-Netto-Berechnung nach PAP 2026 und SV-Rechengrößen-VO 2026</div>
+  <h1>LohnTool ${jahr} &nbsp;·&nbsp; Lohnabrechnung${vorl ? ' (vorläufig)' : ''}</h1>
+  <div class="sub">Brutto-Netto-Berechnung nach ${info.stand}</div>
 </div>
+${vorl ? `<div style="background:#FFF4D6;color:#6B4A00;border:1px solid #E8C86A;padding:6px 10px;margin-top:6px;font-size:11px">
+  <b>Vorläufige Berechnung:</b> beruht auf Entwürfen (PAP/Gesetzgebung ${jahr} noch nicht endgültig).</div>` : ''}
 <div style="display:flex;justify-content:space-between;padding:8px 4px;font-size:12px;color:#555;border-bottom:1px solid #ddd;margin-bottom:4px">
   ${name ? `<span><b>Mitarbeiter:</b> ${name}</span>` : '<span></span>'}
   <span><b>Abrechnungsmonat:</b> ${monatStr}</span>
@@ -351,6 +464,9 @@ ${sep(true)}
   <td style="padding:6px 8px;font-weight:700;font-size:15px;color:#00407A">Nettolohn</td>
   <td style="padding:6px 8px;text-align:right;font-weight:700;font-size:15px;color:#00407A">${fmtEuro(netto)}</td>
 </tr>
+${gPKVZuschuss > 0 ? `${row('+ Zuschuss Arbeitgeber zur privaten KV/PV (steuerfrei)', gPKVZuschuss, false, true)}
+${sep()}
+${row('Auszahlungsbetrag', netto + gPKVZuschuss, true, false, '#00407A')}` : ''}
 ${sep(true)}
 ${sectionHead('Arbeitgeber-Anteile Sozialversicherung')}
 ${row('RV-Anteil Arbeitgeber', SR.RVAG, false, true, '#777')}
@@ -363,9 +479,9 @@ ${sep(true)}
 ${row('Gesamt-Aufwand Arbeitgeber', gBruttoCent + SR.GSAG, true, false, '#5a3000')}
 </table>
 <div class="footer">
-  Berechnung nach PAP 2026 (BMF-Schreiben 12.11.2025) und SV-Rechengrößen-VO 2026.
+  Berechnung nach ${info.stand}.
   Ohne Gewähr – maßgeblich ist die Lohnsteuerbescheinigung.<br>
-  Erstellt am ${now} &nbsp;|&nbsp; LohnTool 2026
+  Erstellt am ${now} &nbsp;|&nbsp; LohnTool ${jahr}
 </div>
 <br>
 <button onclick="window.print()" style="padding:8px 20px;cursor:pointer;background:#8B4500;color:#fff;border:none;border-radius:4px;font-size:13px">Drucken / PDF</button>
@@ -377,6 +493,9 @@ ${row('Gesamt-Aufwand Arbeitgeber', gBruttoCent + SR.GSAG, true, false, '#5a3000
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     initControls();
+    el('cmbJahr').addEventListener('change', aktualisiereJahr);
+    // Serverliste übernehmen, aktuelle Auswahl beibehalten
+    ladeJahre().then(() => fuelleJahre(gewaehltesJahr()));
     el('btnBerechnen').addEventListener('click', berechnen);
     el('btnDrucken').addEventListener('click', drucken);
     el('btnEnde').addEventListener('click', () => window.close());
@@ -385,10 +504,16 @@ document.addEventListener('DOMContentLoaded', () => {
     el('chkKiSt').addEventListener('change', aktualisiereKiStFelder);
     el('chkAlter64').addEventListener('change', aktualisiereAlterFelder);
     // Betragsfelder formatieren bei Verlassen
-    ['edtBrutto', 'edtFreibetrag', 'edtPKVBeitrag', 'edtPKVAGZusch'].forEach(id => {
+    ['edtBrutto', 'edtFreibetrag', 'edtPKVBeitragKV', 'edtPKVBeitragPV'].forEach(id => {
         el(id).addEventListener('blur', (e) => {
             formatBetrag(e.target);
         });
+    });
+    // Basis-KV darf leer bleiben (= gesamter KV-Beitrag)
+    el('edtPKVBasisKV').addEventListener('blur', (e) => {
+        const f = e.target;
+        if (f.value.trim() !== '')
+            formatBetrag(f);
     });
     // Enter im Formular = Berechnen
     document.addEventListener('keydown', (e) => {

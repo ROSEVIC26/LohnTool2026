@@ -61,6 +61,24 @@ html, body {
   color: var(--clr-header-sub);
 }
 
+.app-header #jahrStand {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Hinweisband für vorläufige Jahresversionen (Entwurfsstand) */
+.jahr-hinweis {
+  background: #FFF4D6;
+  color: #6B4A00;
+  border-bottom: 1px solid #E8C86A;
+  padding: 6px 20px;
+  font-size: 12px;
+  line-height: 1.45;
+  flex-shrink: 0;
+}
+
+.jahr-hinweis b { color: #8B4500; }
+
 .app-body {
   display: flex;
   flex: 1;
@@ -145,6 +163,11 @@ html, body {
 .field-row input[type="number"],
 .field-row select {
   flex: 1;
+  /* Flex-Elemente schrumpfen sonst nicht unter ihre natürliche Breite
+     (ca. 20 Zeichen) – Felder ragten über den Kasten hinaus und der Kasten
+     verrutschte beim Anklicken. */
+  min-width: 0;
+  width: 100%;
   padding: 4px 7px;
   border: 1px solid #C8BEA8;
   border-radius: 4px;
@@ -172,11 +195,12 @@ html, body {
   align-items: center;
   gap: 5px;
   flex: 1;
+  min-width: 0;
 }
 
-.monat-row select { flex: 1; }
+.monat-row select { flex: 1; min-width: 0; }
 .monat-row span   { color: #888; }
-.monat-row select:last-child { flex: 0 0 90px; }
+.monat-row select:last-child { flex: 0 0 80px; }   /* Jahr; Rest für den Monat ("September") */
 
 .check-row {
   display: flex;
