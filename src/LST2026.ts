@@ -12,64 +12,11 @@
  * Alle Cent-Beträge als number (ganzzahlig), Float-Werte als number.
  */
 
-// ---------------------------------------------------------------------------
-// Eingangsparameter
-// ---------------------------------------------------------------------------
-export interface LST2026Params {
-  AF      : number;  // 1 = Faktorverfahren gewählt (nur STKL IV)
-  AJAHR   : number;  // Kj. nach Vollendung 64. Lj. (wenn ALTER1=1)
-  ALTER1  : number;  // 1 = 64. Lj. vor Beginn des Kj. vollendet, sonst 0
-  ALV     : number;  // 0 = AV-pflichtig (allg. BBG), 1 = sonst
-  F       : number;  // Faktor (3 Nachkommastellen), nur bei AF=1
-  JFREIB  : number;  // Jahresfreibetrag in Cent
-  JHINZU  : number;  // Jahreshinzurechnungsbetrag in Cent
-  JRE4    : number;  // Vorauss. Jahresarbeitslohn ohne sonst. Bezüge, Cent
-  JRE4ENT : number;  // In JRE4 enthaltene Entschädigungen/VermBeteil., Cent
-  JVBEZ   : number;  // In JRE4 enthaltene Versorgungsbezüge, Cent
-  KRV     : number;  // 0 = RV-pflichtig (allg. BBG), 1 = sonst
-  KVZ     : number;  // Kassenindiv. Zusatzbeitragssatz KV in % (z.B. 2.90)
-  LZZ     : number;  // 1=Jahr 2=Monat 3=Woche 4=Tag
-  LZZFREIB: number;  // Freibetrag für den LZZ, Cent
-  LZZHINZU: number;  // Hinzurechnungsbetrag für den LZZ, Cent
-  MBV     : number;  // Nicht zu besteuernde Vorteile Vermögensbeteil., Cent
-  PKPV    : number;  // Private Basiskranken-/PflegePflichtvers., Cent/Monat
-  PKPVAGZ : number;  // Steuerfreier AG-Zuschuss priv. KV/PV, Cent/Monat
-  PKV     : number;  // 0=gesetzl. KV, 1=ausschl. privat KV
-  PVA     : number;  // Anzahl Beitragsabschläge PV (0..4)
-  PVS     : number;  // 1 = Sachsen-Besonderheit PV
-  PVZ     : number;  // 1 = Zuschlag PV (kinderlos)
-  R       : number;  // Religionszugehörigkeit (0 = keine)
-  RE4     : number;  // Steuerpflichtig. Arbeitslohn für den LZZ, Cent
-  SONSTB  : number;  // Sonstige Bezüge inkl. VermBeteil., Cent
-  SONSTENT: number;  // In SONSTB enthaltene Entschädigungen/VermBeteil., Cent
-  STERBE  : number;  // Sterbegeld/Kapitalabfindung (in SONSTB enthalten), Cent
-  STKL    : number;  // Steuerklasse 1..6
-  VBEZ    : number;  // In RE4 enthaltene Versorgungsbezüge, Cent
-  VBEZM   : number;  // Versorgungsbezug Januar 2005 / erster voller Monat, Cent
-  VBEZS   : number;  // Vorauss. Sonderzahlungen Versorgungsbezüge, Cent
-  VBS     : number;  // In SONSTB enthaltene Versorgungsbezüge, Cent
-  VJAHR   : number;  // Jahr des erstmaligen Versorgungsbezugs
-  ZKF     : number;  // Zahl der Kinderfreibeträge (1 Dezimalstelle)
-  ZMVB    : number;  // Monate mit Versorgungsbezügen (nur bei LZZ=1)
-}
+import type { LSTParams, LSTResult } from './LohnTypen.js';
 
-// ---------------------------------------------------------------------------
-// Ausgangsparameter
-// ---------------------------------------------------------------------------
-export interface LST2026Result {
-  LSTLZZ  : number;  // Lohnsteuer für den LZZ, Cent
-  SOLZLZZ : number;  // Solidaritätszuschlag für den LZZ, Cent
-  BK      : number;  // Bemessungsgrundlage Kirchenlohnsteuer, Cent
-  STS     : number;  // Lohnsteuer auf sonstige Bezüge, Cent
-  SOLZS   : number;  // SolZ auf sonstige Bezüge, Cent
-  BKS     : number;  // BMG Kirchenlohnsteuer sonstige Bezüge, Cent
-  VFRB    : number;
-  VFRBS1  : number;
-  VFRBS2  : number;
-  WVFRB   : number;
-  WVFRBM  : number;
-  WVFRBO  : number;
-}
+// Ein-/Ausgangsparameter: jahresübergreifend in LohnTypen.ts definiert
+export type LST2026Params = LSTParams;
+export type LST2026Result = LSTResult;
 
 // ---------------------------------------------------------------------------
 // Interner Zustand

@@ -10,35 +10,8 @@
  *
  * TypeScript-Portierung aus SV2026.pas (Delphi)
  */
-export interface SV2026Params {
-    BRUTTO: number;
-    RK: number;
-    PKV: number;
-    KVZ: number;
-    KVERM: number;
-    PKPV: number;
-    PKPVAG: number;
-    PVKinder: number;
-    PVS: number;
-    KRV: number;
-    KAV: number;
-}
-export interface SV2026Result {
-    KVAN: number;
-    KVAG: number;
-    KVBMG: number;
-    PVAN: number;
-    PVAG: number;
-    PVBMG: number;
-    RVAN: number;
-    RVAG: number;
-    RVBMG: number;
-    AVAN: number;
-    AVAG: number;
-    AVBMG: number;
-    GSAN: number;
-    GSAG: number;
-    GSGES: number;
-}
+import type { SVParams, SVResult } from './LohnTypen.js';
+export type SV2026Params = SVParams;
+export type SV2026Result = SVResult;
 export declare function SV2026_Init(P: SV2026Params): void;
 export declare function SV2026_Berechne(P: SV2026Params): SV2026Result;

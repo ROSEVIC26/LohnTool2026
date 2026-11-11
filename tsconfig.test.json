@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": true,
+    "outDir": "./test-dist",
+    "rootDir": ".",
+    "lib": ["ES2020"]
+  },
+  "files": ["src/Jahresversionen.ts"]
+}

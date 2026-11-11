@@ -11,43 +11,11 @@
  * TypeScript-Portierung aus SV2026.pas (Delphi)
  */
 
-// ---------------------------------------------------------------------------
-// Eingangsparameter
-// ---------------------------------------------------------------------------
-export interface SV2026Params {
-  BRUTTO    : number;  // Bruttoarbeitsentgelt für den Monat, Cent
-  RK        : number;  // Rechtskreis: 0=West, 1=Ost (ab 2026 ohne Wirkung)
-  PKV       : number;  // 0 = gesetzliche KV/PV, 1 = ausschließlich privat
-  KVZ       : number;  // Kassenindiv. Zusatzbeitragssatz KV in % (z.B. 2.90)
-  KVERM     : number;  // 0 = allg. Beitragssatz, 1 = ermäßigt
-  PKPV      : number;  // Monatlicher Beitrag priv. KV/PV, Cent (nur PKV=1)
-  PKPVAG    : number;  // Monatlicher AG-Zuschuss priv. KV/PV, Cent (nur PKV=1)
-  PVKinder  : number;  // Anzahl Kinder unter 25 J. (0..5+)
-  PVS       : number;  // 1 = Sachsen-Sonderregelung PV
-  KRV       : number;  // 0 = RV-pflichtig, 1 = nicht RV-pflichtig
-  KAV       : number;  // 0 = AV-pflichtig, 1 = nicht AV-pflichtig
-}
+import type { SVParams, SVResult } from './LohnTypen.js';
 
-// ---------------------------------------------------------------------------
-// Ausgangsparameter
-// ---------------------------------------------------------------------------
-export interface SV2026Result {
-  KVAN  : number;  // KV-Beitrag AN, Cent
-  KVAG  : number;  // KV-Beitrag AG, Cent
-  KVBMG : number;  // KV-Bemessungsgrundlage, Cent
-  PVAN  : number;  // PV-Beitrag AN, Cent
-  PVAG  : number;  // PV-Beitrag AG, Cent
-  PVBMG : number;  // PV-Bemessungsgrundlage, Cent
-  RVAN  : number;  // RV-Beitrag AN, Cent
-  RVAG  : number;  // RV-Beitrag AG, Cent
-  RVBMG : number;  // RV-Bemessungsgrundlage, Cent
-  AVAN  : number;  // AV-Beitrag AN, Cent
-  AVAG  : number;  // AV-Beitrag AG, Cent
-  AVBMG : number;  // AV-Bemessungsgrundlage, Cent
-  GSAN  : number;  // Gesamter SV-Beitrag AN, Cent
-  GSAG  : number;  // Gesamter SV-Beitrag AG, Cent
-  GSGES : number;  // Gesamter SV-Beitrag AN+AG, Cent
-}
+// Ein-/Ausgangsparameter: jahresübergreifend in LohnTypen.ts definiert
+export type SV2026Params = SVParams;
+export type SV2026Result = SVResult;
 
 // ---------------------------------------------------------------------------
 // Rechengrößen 2026 (monatlich, Beträge in Cent)
@@ -67,8 +35,14 @@ const PV_AN_BASIS_S = 2.3;
 const PV_ZUSCHLAG   = 0.6;
 const PV_ABSCHLAG   = 0.25;
 
-const PKV_KV_AG_MAX = 42431;   // 424,31 €
-const PKV_PV_AG_MAX = 10463;   // 104,63 €
+// Höchstzuschuss AG zur privaten KV/PV (§ 257 SGB V, § 61 SGB XI):
+// KV: BBG × (14,6 % / 2 + durchschn. Zusatzbeitrag 2,9 % / 2) = 5.812,50 € × 8,75 %
+//     (korrigiert am 11.11.2026; vorher 424,31 € ohne Zusatzbeitragsanteil)
+// PV: BBG × 1,8 %, in Sachsen BBG × 1,3 % (AG-Anteil dort niedriger)
+//     (Sachsen korrigiert am 11.11.2026; vorher auch dort 104,63 €)
+const PKV_KV_AG_MAX         = 50859;   // 508,59 €
+const PKV_PV_AG_MAX         = 10463;   // 104,63 €
+const PKV_PV_AG_MAX_SACHSEN =  7556;   //  75,56 €
 
 // ---------------------------------------------------------------------------
 // Hilfsfunktionen
@@ -90,8 +64,8 @@ export function SV2026_Init(P: SV2026Params): void {
   P.PKV      = 0;
   P.KVZ      = 2.90;
   P.KVERM    = 0;
-  P.PKPV     = 0;
-  P.PKPVAG   = 0;
+  P.PKVBeitragKV = 0;
+  P.PKVBeitragPV = 0;
   P.PVKinder = 1;
   P.PVS      = 0;
   P.KRV      = 0;
@@ -125,7 +99,8 @@ export function SV2026_Berechne(P: SV2026Params): SV2026Result {
     R.KVAG = roundCent(bmgKVPV * (kvSatz / 2.0) / 100.0);
   } else {
     let kvAgMax = PKV_KV_AG_MAX;
-    if (kvAgMax > Math.trunc(P.PKPV / 2)) kvAgMax = Math.trunc(P.PKPV / 2);
+    // höchstens die Hälfte des tatsächlichen KV-Beitrags (§ 257 Abs. 2 SGB V)
+    if (kvAgMax > Math.trunc(P.PKVBeitragKV / 2)) kvAgMax = Math.trunc(P.PKVBeitragKV / 2);
     R.KVAG = kvAgMax;
     R.KVAN = 0;
   }
@@ -147,8 +122,9 @@ export function SV2026_Berechne(P: SV2026Params): SV2026Result {
     R.PVAN = roundCent(bmgKVPV * pvSatzAN  / 100.0);
     R.PVAG = roundCent(bmgKVPV * pvSatzAG  / 100.0);
   } else {
-    let pvAgMax = PKV_PV_AG_MAX;
-    if (pvAgMax > Math.trunc(P.PKPV / 2)) pvAgMax = Math.trunc(P.PKPV / 2);
+    let pvAgMax = P.PVS === 1 ? PKV_PV_AG_MAX_SACHSEN : PKV_PV_AG_MAX;
+    // höchstens die Hälfte des tatsächlichen PV-Beitrags (§ 61 Abs. 2 SGB XI)
+    if (pvAgMax > Math.trunc(P.PKVBeitragPV / 2)) pvAgMax = Math.trunc(P.PKVBeitragPV / 2);
     R.PVAG = pvAgMax;
     R.PVAN = 0;
   }

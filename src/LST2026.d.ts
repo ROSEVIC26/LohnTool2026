@@ -11,56 +11,8 @@
  * TypeScript-Portierung aus LST2026.pas (Delphi)
  * Alle Cent-Beträge als number (ganzzahlig), Float-Werte als number.
  */
-export interface LST2026Params {
-    AF: number;
-    AJAHR: number;
-    ALTER1: number;
-    ALV: number;
-    F: number;
-    JFREIB: number;
-    JHINZU: number;
-    JRE4: number;
-    JRE4ENT: number;
-    JVBEZ: number;
-    KRV: number;
-    KVZ: number;
-    LZZ: number;
-    LZZFREIB: number;
-    LZZHINZU: number;
-    MBV: number;
-    PKPV: number;
-    PKPVAGZ: number;
-    PKV: number;
-    PVA: number;
-    PVS: number;
-    PVZ: number;
-    R: number;
-    RE4: number;
-    SONSTB: number;
-    SONSTENT: number;
-    STERBE: number;
-    STKL: number;
-    VBEZ: number;
-    VBEZM: number;
-    VBEZS: number;
-    VBS: number;
-    VJAHR: number;
-    ZKF: number;
-    ZMVB: number;
-}
-export interface LST2026Result {
-    LSTLZZ: number;
-    SOLZLZZ: number;
-    BK: number;
-    STS: number;
-    SOLZS: number;
-    BKS: number;
-    VFRB: number;
-    VFRBS1: number;
-    VFRBS2: number;
-    WVFRB: number;
-    WVFRBM: number;
-    WVFRBO: number;
-}
+import type { LSTParams, LSTResult } from './LohnTypen.js';
+export type LST2026Params = LSTParams;
+export type LST2026Result = LSTResult;
 export declare function LST2026_Init(P: LST2026Params): void;
 export declare function LST2026_Berechne(P: LST2026Params): LST2026Result;

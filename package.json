@@ -2,7 +2,7 @@
   "name": "lohntool2026",
   "version": "1.0.0",
   "type": "module",
-  "description": "Brutto-Netto-Berechnung 2026",
+  "description": "Brutto-Netto-Berechnung (Jahresversionen 2026, 2027)",
   "engines": {
     "node": ">=18"
   },
@@ -10,7 +10,8 @@
     "build": "tsc && copy src\\app.js docs\\app.js && copy src\\style.css docs\\style.css && copy src\\index.html docs\\index.html && copy src\\ROSEVIC_Lohn.ico docs\\ROSEVIC_Lohn.ico",
     "watch": "tsc --watch",
     "start": "node server-dist/server/server.js",
-    "build:server": "npx tsc -p tsconfig.server.json"
+    "build:server": "npx tsc -p tsconfig.server.json",
+    "test": "tsc -p tsconfig.test.json && node test/pruef-lst.mjs"
   },
   "dependencies": {
     "express": "^5.1.0"

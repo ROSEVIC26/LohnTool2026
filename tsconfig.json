@@ -7,11 +7,18 @@
     "noImplicitAny": true,
     "declaration": true,
     "sourceMap": true,
-    "lib": ["ES2020", "DOM"]
+    "lib": [
+      "ES2020",
+      "DOM"
+    ]
   },
   "files": [
+    "src/LohnTypen.ts",
     "src/LST2026.ts",
     "src/SV2026.ts",
+    "src/LST2027.ts",
+    "src/SV2027.ts",
+    "src/Jahresversionen.ts",
     "src/app.ts"
   ]
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LohnTool 2026 · Brutto-Netto-Berechnung</title>
+  <title>LohnTool · Brutto-Netto-Berechnung</title>
   <link rel="icon" type="image/x-icon" href="ROSEVIC_Lohn.ico" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -13,9 +13,13 @@
 
   <!-- ================================================================ HEADER -->
   <header class="app-header">
-    <h1>LohnTool 2026</h1>
+    <h1 id="appTitel">LohnTool</h1>
     <span class="sub">Brutto-Netto-Berechnung · Lohn-/Kirchensteuer · Sozialversicherung</span>
+    <span class="sub" id="jahrStand"></span>
   </header>
+
+  <!-- Hinweis bei vorläufigen Jahresversionen (Entwurfsstand) -->
+  <div class="jahr-hinweis" id="jahrHinweis" hidden></div>
 
   <!-- ================================================================ BODY -->
   <main class="app-body">
@@ -129,14 +133,18 @@
             <label for="chkSachsen">Sachsen (PV-Sonderregelung)</label>
           </div>
 
-          <!-- PKV-Felder -->
-          <div id="lblPKVBeitrag" class="field-row" style="display:none">
-            <label for="edtPKVBeitrag">PKV-Beitrag (€/Monat)</label>
-            <input type="text" id="edtPKVBeitrag" class="right" value="0,00" />
+          <!-- PKV-Felder (Monatsbeiträge lt. Versicherer; AG-Zuschuss wird berechnet) -->
+          <div id="rowPKVBeitragKV" class="field-row" style="display:none">
+            <label for="edtPKVBeitragKV" title="Monatsbeitrag zur privaten Krankenversicherung (gesamt)">KV-Beitrag (€/Mon.)</label>
+            <input type="text" id="edtPKVBeitragKV" class="right" value="0,00" />
           </div>
-          <div id="lblPKVAGZusch" class="field-row" style="display:none">
-            <label for="edtPKVAGZusch">AG-Zuschuss PKV (€)</label>
-            <input type="text" id="edtPKVAGZusch" class="right" value="0,00" />
+          <div id="rowPKVBasisKV" class="field-row" style="display:none">
+            <label for="edtPKVBasisKV" title="Anteil für die Basisabsicherung lt. Versicherer bzw. ELStAM (§ 10 Abs. 1 Nr. 3 EStG). Leer = gesamter KV-Beitrag.">davon Basis-KV (€)</label>
+            <input type="text" id="edtPKVBasisKV" class="right" value="" placeholder="= KV-Beitrag" />
+          </div>
+          <div id="rowPKVBeitragPV" class="field-row" style="display:none">
+            <label for="edtPKVBeitragPV" title="Monatsbeitrag zur privaten Pflege-Pflichtversicherung">PV-Beitrag (€/Mon.)</label>
+            <input type="text" id="edtPKVBeitragPV" class="right" value="0,00" />
           </div>
 
           <div style="margin-top:6px;display:flex;gap:20px">
@@ -225,6 +233,16 @@
         <div class="ergebnis-row netto-row">
           <span class="ergebnis-label bold" id="lblRNetto">Nettolohn</span>
           <span class="ergebnis-wert bold netto-doppelt" id="wRNetto">–</span>
+        </div>
+
+        <!-- Nur PKV: steuerfreier AG-Zuschuss wird mit dem Lohn ausgezahlt -->
+        <div class="ergebnis-row" id="rowRPKVZusch" style="display:none">
+          <span class="ergebnis-label" id="lblRPKVZusch">+ AG-Zuschuss KV/PV (steuerfrei)</span>
+          <span class="ergebnis-wert" id="wRPKVZusch">–</span>
+        </div>
+        <div class="ergebnis-row summen-row" id="rowRAuszahlung" style="display:none">
+          <span class="ergebnis-label bold" id="lblRAuszahlung">Auszahlungsbetrag</span>
+          <span class="ergebnis-wert bold" id="wRAuszahlung">–</span>
         </div>
 
         <!-- AG-Anteile (ausklappbar) -->

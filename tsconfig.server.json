@@ -10,11 +10,17 @@
     "outDir": "./server-dist",
     "rootDir": ".",
     "sourceMap": true,
-    "lib": ["ES2020"]
+    "lib": [
+      "ES2020"
+    ]
   },
   "include": [
     "server/**/*.ts",
+    "src/LohnTypen.ts",
     "src/LST2026.ts",
-    "src/SV2026.ts"
+    "src/SV2026.ts",
+    "src/LST2027.ts",
+    "src/SV2027.ts",
+    "src/Jahresversionen.ts"
   ]
 }
